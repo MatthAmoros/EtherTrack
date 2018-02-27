@@ -1,0 +1,17 @@
+#Global concept
+Public server that pair ether node to a public name.
+
+#Functional design
+:Publish new [NAME][NODE] key
+	-> Network contract with basic GET / PUT methods ?
+	-> How to store state ?
+
+
+:Authentificate / Validate key and name property
+	-> With a specific contract that "pair" the name with the node
+
+:(optional) Monitor ether network to track changes ([NAME][NODE] pair expired ?)
+:(optional) 
+
+#Technologies 
+:Solidity
