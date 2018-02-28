@@ -1,6 +1,6 @@
 #Global concept
 An ether token that represents the traceability unit (any SKU)
-Due to network latency, tokens cannot represents 
+Due to network latency, tokens cannot represents final products (i.e : a bottle) but can represents batches (containers)
 
 #Functional design
 :Must be immortal to ensure traceability
