@@ -1,99 +1,105 @@
 ﻿pragma solidity ^0.4.2;
+/// Owned contract as defined in Solidity documentation
 contract owned
 {
-    function owned() { owner = msg.sender; }
+    function owned() internal { owner = msg.sender; }
     address owner;
+    
+        modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
 }
 
-// Use `is` to derive from another contract. Derived
-// contracts can access all non-private members including
-// internal functions and state variables. These cannot be
-// accessed externally via `this`, though.
+/// Mortal contract as defined in Solidity documentation
 contract mortal is owned {
-    function kill()
-{
-    if (msg.sender == owner) selfdestruct(owner);
+    function kill() internal onlyOwner {
+        selfdestruct(owner);
+    }
 }
-}
-
-// These abstract contracts are only provided to make the
-// interface known to the compiler. Note the function
-// without body. If a contract does not implement all
-// functions it can only be used as an interface.
-contract Config
-{
-    function lookup(uint id) public returns(address adr);
-}
-
-
 
 contract EtherTrackNS is owned, mortal {
 
+    /// Structure for names storage
     struct NamedNodeInfo
-{
-    string name;
-    uint64 weight;
-}
+    {
+        string name;
+        uint64 weight;
+    }
+    
+    /// Fired on entries update
+    event  updateEntries (address owner, string name);
 
-event updateEntries (address owner, string name);
-
-/// Hash table that pair address with public name
-mapping(address => NamedNodeInfo) public InfoByNode;
+    /// Hash table that pair address with public name
+    mapping(address => NamedNodeInfo) public InfoByNode;
     mapping(address => bool)  registeredByNode;
     mapping(string => address)  nodeByName;
+    
     /// EtherTrackNS parent to forward queries
     address _parent;
 
-///Fallback function
-function() public payable {}
+    ///Fallback function
+    function() public payable {}
 
     /// Constructor
     /// Create a new ballot with $(_numProposals) different proposals.
     function EtherTrackNS(address parent) public {
         _parent = parent;
     }
-
-    ///getNameByNodeAddress
-    /// Returns name corresponding to provided node address
-    function getNameByNodeAddress(address node) public view returns(string _name)
-{
-    if (registeredByNode[node])
-        _name = InfoByNode[node].name;
-
-    return _name;
-}
-
-function registerName(string name) public payable returns(bool registered)
-{
-
-    if (!registeredByNode[msg.sender])
+    
+    /// updateRegisters
+    /// Upadtes registry with the provided node/name pair
+    function updateRegisters(address node, string name) internal returns(bool registered)
     {
-        /// Name already used
-        if (nodeByName[name] == address(0))
+        if (!registeredByNode[node])
         {
-            /// Mark as registered
-            registeredByNode[msg.sender] = true;
-            /// Update info
-            InfoByNode[msg.sender].name = name;
-            InfoByNode[msg.sender].weight = 0;
+            /// Name already used
+            if (nodeByName[name] == address(0))
+            {
+                /// Mark as registered
+                registeredByNode[node] = true;
+                /// Update info
+                InfoByNode[node].name = name;
+                InfoByNode[node].weight = 0;
 
-            registered = true;
+                registered = true;
 
-            require(registered);
-            // _parent.registerName();
+                require(registered);
+                updateEntries(node, name);
+            }
+            else
+            {
+                registered = false;
+            }
+
+            return registered;
         }
-        else
-        {
-            registered = false;
-        }
-
-
-        return registered;
     }
-}
 
-/// Delegate name
-function delegate (address to) public {
+    /*
+     * ==== EXTERNAL ====
+     */
+
+    /// getNameByNodeAddress
+    /// Returns name corresponding to provided node address
+    function getNameByNodeAddress(address node) external view returns(string _name)
+    {
+        if (registeredByNode[node])
+            _name = InfoByNode[node].name;
+
+        return _name;
+    }
+    
+    /// registerName
+    /// Registers name and asociate it to caller address
+    function registerName(string name) external payable returns(bool registered)
+    {
+        return updateRegisters(msg.sender, name);
+    }
+
+    /// delegate
+    /// Delegate name to specified address
+    function delegate (address to) external payable {
         if(registeredByNode[msg.sender] && !registeredByNode[to])
         {
             string storage callerNodeName = InfoByNode[msg.sender].name;
