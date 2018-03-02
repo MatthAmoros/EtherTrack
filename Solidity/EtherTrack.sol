@@ -23,17 +23,17 @@ contract EtherTrackNS is owned, mortal {
     /// Structure for names storage
     struct NamedNodeInfo
     {
-        string name;
+        uint64 GS1_GLN; /// GS1 Company Prefix
         uint64 weight;
     }
     
     /// Fired on entries update
-    event  updateEntries (address owner, string name);
+    event  updateEntries (address owner, uint64 GS1_GLN);
 
     /// Hash table that pair address with public name
     mapping(address => NamedNodeInfo) public InfoByNode;
     mapping(address => bool)  registeredByNode;
-    mapping(string => address)  nodeByName;
+    mapping(uint64 => address)  nodeByName;
     
     /// EtherTrackNS parent to forward queries
     address _parent;
@@ -49,23 +49,23 @@ contract EtherTrackNS is owned, mortal {
     
     /// updateRegisters
     /// Upadtes registry with the provided node/name pair
-    function updateRegisters(address node, string name) internal returns(bool registered)
+    function updateRegisters(address node, uint64 GS1_GLN) internal returns(bool registered)
     {
         if (!registeredByNode[node])
         {
             /// Name already used
-            if (nodeByName[name] == address(0))
+            if (nodeByName[GS1_GLN] == address(0))
             {
                 /// Mark as registered
                 registeredByNode[node] = true;
                 /// Update info
-                InfoByNode[node].name = name;
+                InfoByNode[node].GS1_GLN = GS1_GLN;
                 InfoByNode[node].weight = 0;
 
                 registered = true;
 
                 require(registered);
-                updateEntries(node, name);
+                updateEntries(node, GS1_GLN);
             }
             else
             {
@@ -82,10 +82,10 @@ contract EtherTrackNS is owned, mortal {
 
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
-    function getNameByNodeAddress(address node) external view returns(string _name)
+    function getNameByNodeAddress(address node) external view returns(uint64 _name)
     {
         if (registeredByNode[node])
-            _name = InfoByNode[node].name;
+            _name = InfoByNode[node].GS1_GLN;
 
         return _name;
     }
@@ -100,9 +100,9 @@ contract EtherTrackNS is owned, mortal {
     
     /// registerName
     /// Registers name and asociate it to caller address
-    function registerName(string name) external payable returns(bool registered)
+    function registerName(uint64 GS1_GLN) external payable returns(bool registered)
     {
-        return updateRegisters(msg.sender, name);
+        return updateRegisters(msg.sender, GS1_GLN);
     }
 
     /// delegate
@@ -110,15 +110,15 @@ contract EtherTrackNS is owned, mortal {
     function delegate (address to) external payable {
         if(registeredByNode[msg.sender] && !registeredByNode[to])
         {
-            string storage callerNodeName = InfoByNode[msg.sender].name;
+            uint64 callerNodeName = InfoByNode[msg.sender].GS1_GLN;
 
             
             ///Update entries
-            InfoByNode[to].name = callerNodeName;
+            InfoByNode[to].GS1_GLN = callerNodeName;
             InfoByNode[to].weight = 0;
             nodeByName[callerNodeName] = to;
             
-            InfoByNode[msg.sender].name = "";
+            InfoByNode[msg.sender].GS1_GLN = uint64(0);
                         
             registeredByNode[to] = true;
         }
