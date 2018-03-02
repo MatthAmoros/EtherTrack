@@ -1,0 +1,45 @@
+﻿<!doctype>
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var etherTrackNS_ABI;
+
+        window.addEventListener('load', function () {
+            // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+            if (typeof web3 !== 'undefined') {
+                // Use Mist/MetaMask's provider
+                var context = new Web3(web3.currentProvider);
+                //Start DApp
+                startDapp(context);
+            } else {
+                console.log('MetaMask not detected')
+            }
+        });
+
+        function startDapp(context) {
+            // Get events for user node
+            var userAccountAddress = context.eth.accounts[0];
+
+            if (!context.isConnected()) {
+                console.log('Not connected')
+                return;
+            }
+
+            //Load contract definition
+            loadAbi();
+        }
+
+        function loadAbi() {
+            $.getJSON("./ABI/EtherTrackNS.json", function (json) {
+                etherTrackNS_ABI = json;
+                console.log("ABI loaded.");
+            });
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>

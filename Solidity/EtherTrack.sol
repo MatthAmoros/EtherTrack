@@ -18,20 +18,12 @@ contract mortal is owned {
     }
 }
 
-contract EtherTrackNS is owned, mortal {
-
-    /// Structure for names storage
-    struct NamedNodeInfo
-    {
-        uint64 GS1_GLN; /// GS1 Company Prefix
-        uint64 weight;
-    }
-    
+contract EtherTrackNS is owned {
     /// Fired on entries update
     event  updateEntries (address owner, uint64 GS1_GLN);
 
     /// Hash table that pair address with public name
-    mapping(address => NamedNodeInfo) public InfoByNode;
+    mapping(address => uint64) public InfoByNode;
     mapping(address => bool)  registeredByNode;
     mapping(uint64 => address)  nodeByName;
     
@@ -59,8 +51,7 @@ contract EtherTrackNS is owned, mortal {
                 /// Mark as registered
                 registeredByNode[node] = true;
                 /// Update info
-                InfoByNode[node].GS1_GLN = GS1_GLN;
-                InfoByNode[node].weight = 0;
+                InfoByNode[node] = GS1_GLN;
 
                 registered = true;
 
@@ -85,14 +76,14 @@ contract EtherTrackNS is owned, mortal {
     function getNameByNodeAddress(address node) external view returns(uint64 _name)
     {
         if (registeredByNode[node])
-            _name = InfoByNode[node].GS1_GLN;
+            _name = InfoByNode[node];
 
         return _name;
     }
     
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
-    function exists(address node) external returns(bool exists)
+    function exists(address node) external view returns(bool exists)
     {
         return registeredByNode[node];
     }
@@ -109,27 +100,32 @@ contract EtherTrackNS is owned, mortal {
     function delegate (address to) external payable {
         if(registeredByNode[msg.sender] && !registeredByNode[to])
         {
-            uint64 callerNodeName = InfoByNode[msg.sender].GS1_GLN;
-
+            uint64 callerNodeName = InfoByNode[msg.sender];
             
             ///Update entries
-            InfoByNode[to].GS1_GLN = callerNodeName;
-            InfoByNode[to].weight = 0;
+            InfoByNode[to] = callerNodeName;
             nodeByName[callerNodeName] = to;
             
-            InfoByNode[msg.sender].GS1_GLN = uint64(0);
+            InfoByNode[msg.sender] = uint64(0);
                         
             registeredByNode[to] = true;
         }
     }
 }
 
-contract TraceabilityUnit is owned {
+/// Example for constructor : "07804652870010","00118292000000000001","123","11894", "0xff36aa89578a13910970367086de0bfcf1783359"
+contract TraceabilityUnit is owned, mortal {
+    /*
+    * According to GS1 standards, the GTIN/SN pair should be unique
+    *
+    */
+    /// Fallback function
+    function() public payable { }
     
     struct UnitInfo {
-        uint64 GS1_GTIN; /// Global Trade Item Number (GTIN) AI01
-        uint64 GS1_GSIN; /// Global Shipment Identification Number (GSIN) 
-        uint64 GS1_SSC; /// Serial Shipping Container Code (SSCC)
+        string GS1_GTIN; /// Global Trade Item Number (GTIN) AI01
+        string GS1_GSIN; /// Global Shipment Identification Number (GSIN) 
+        string GS1_SSC; /// Serial Shipping Container Code (SSCC)
         string GS1_SN; /// Serial Number (SN) AI21
     }
     
@@ -138,18 +134,19 @@ contract TraceabilityUnit is owned {
     address _etherTrackNS; /// Store naming service contract reference
     
     /// Fired on tracebility unit creation
-    event notifyCreation(address owner, uint64 gtin, string sn);
-    event notifyOwnershipTransfer(address to, uint64 gtin, string sn);
-    event notifyLocationChanged(address newLocation, uint64 gtin, string sn);
+    event notifyCreation(address owner, string gtin, string sn);
+    event notifyOwnershipTransfer(address to, string gtin, string sn);
+    event notifyLocationChanged(address newLocation, string gtin, string sn);
     
     /// Create a new traceability unit and validate its owner throught EtherTrackNS
-    function TraceabilityUnit (uint64 gtin, uint64 sscc, uint64 gsin, string sn, address etherTrackNS) {
+    function TraceabilityUnit (string gtin, string sscc, string gsin, string sn, address etherTrackNS) public {
         _etherTrackNS = etherTrackNS;
         
-        //Validate that owner is registred on the naming service
+        //Validate that owner is registred on the naming service and that GS1 AI are well formed
+        require(validateGS1Constraints(gtin, sn) == true);
         require(etherTrackNS != address(0));
         require(validateNode(owner) == true);
-        
+
         _info.GS1_GTIN = gtin;
         _info.GS1_GSIN = gsin;
         _info.GS1_SSC = sscc;
@@ -158,6 +155,11 @@ contract TraceabilityUnit is owned {
         _location = owner;
         
         notifyCreation(owner, _info.GS1_GTIN, _info.GS1_SN);
+    }
+    
+    /// Publicly exposed constraints
+    function validateGS1Constraints(string gtin, string sn) internal pure returns (bool) {
+        return (bytes(gtin).length == 14 && bytes(sn).length <= 20); 
     }
     
     /// Transfer unit ownership to specified node
@@ -173,6 +175,12 @@ contract TraceabilityUnit is owned {
         _location = to;
         
         notifyLocationChanged(to, _info.GS1_GTIN, _info.GS1_SN);
+    }
+    
+    function changeEtherTrackNS(address newEtherTrackNS) external payable onlyOwner {
+        // Send exists on new ethertrackNS
+        require(EtherTrackNS(newEtherTrackNS).exists(owner) == true);
+        _etherTrackNS = newEtherTrackNS;
     }
     
     /// Validate that provided node exists
