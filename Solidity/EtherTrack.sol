@@ -2,7 +2,7 @@ pragma solidity ^0.4.2;
 /// Owned contract as defined in Solidity documentation
 contract owned
 {
-    function owned() internal { owner = msg.sender; }
+    function owned() public { owner = msg.sender; }
     address owner;
     
         modifier onlyOwner {
@@ -92,11 +92,10 @@ contract EtherTrackNS is owned, mortal {
     
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
-    function exists(address node) external view returns(bool exists)
+    function exists(address node) external returns(bool exists)
     {
         return registeredByNode[node];
     }
-    
     
     /// registerName
     /// Registers name and asociate it to caller address
@@ -128,26 +127,28 @@ contract EtherTrackNS is owned, mortal {
 contract TraceabilityUnit is owned {
     
     struct UnitInfo {
-        uint8 GS1_GTIN; /// Global Trade Item Number (GTIN) AI01
-        uint8 GS1_GSIN; /// Global Shipment Identification Number (GSIN) 
-        uint8 GS1_SSC; /// Serial Shipping Container Code (SSCC)
+        uint64 GS1_GTIN; /// Global Trade Item Number (GTIN) AI01
+        uint64 GS1_GSIN; /// Global Shipment Identification Number (GSIN) 
+        uint64 GS1_SSC; /// Serial Shipping Container Code (SSCC)
         string GS1_SN; /// Serial Number (SN) AI21
     }
     
     UnitInfo _info; /// Store unit information
     address _location; /// Store unit location
-    EtherTrackNS _etherTrackNS; /// Store naming service contract reference
+    address _etherTrackNS; /// Store naming service contract reference
     
     /// Fired on tracebility unit creation
-    event notifyCreation(address owner, uint8 gtin, string sn);
-    event notifyOwnershipTransfer(address to, uint8 gtin, string sn);
-    event notifyLocationChanged(address newLocation, uint8 gtin, string sn);
+    event notifyCreation(address owner, uint64 gtin, string sn);
+    event notifyOwnershipTransfer(address to, uint64 gtin, string sn);
+    event notifyLocationChanged(address newLocation, uint64 gtin, string sn);
     
     /// Create a new traceability unit and validate its owner throught EtherTrackNS
-    function TraceabilityUnit (uint8 gtin, uint8 sscc, uint8 gsin, string sn, EtherTrackNS etherTrackNS) public onlyOwner {
+    function TraceabilityUnit (uint64 gtin, uint64 sscc, uint64 gsin, string sn, address etherTrackNS) {
+        _etherTrackNS = etherTrackNS;
         
         //Validate that owner is registred on the naming service
-        validateNode(owner);
+        require(etherTrackNS != address(0));
+        require(validateNode(owner) == true);
         
         _info.GS1_GTIN = gtin;
         _info.GS1_GSIN = gsin;
@@ -155,30 +156,25 @@ contract TraceabilityUnit is owned {
         _info.GS1_SN = sn;
         //Set location to owner
         _location = owner;
-        _etherTrackNS = etherTrackNS;
-        
         
         notifyCreation(owner, _info.GS1_GTIN, _info.GS1_SN);
     }
     
     /// Transfer unit ownership to specified node
     function transferOwnerShip(address to) external payable onlyOwner {
-        validateNode(to);
+        require(validateNode(to) == true);
         owner = to;
         notifyOwnershipTransfer(owner, _info.GS1_GTIN, _info.GS1_SN);
     }
     
     /// Change unit location to specified node
     function moveTo(address to) external payable onlyOwner {
-        validateNode(to);
+        require(validateNode(to) == true);
         _location = to;
         
         notifyLocationChanged(to, _info.GS1_GTIN, _info.GS1_SN);
     }
     
     /// Validate that provided node exists
-    function validateNode(address node) view internal
-    {
-        require(_etherTrackNS.exists(node));
-    }
+    function validateNode(address node) view internal returns (bool) { return EtherTrackNS(_etherTrackNS).exists(node); }
 }
