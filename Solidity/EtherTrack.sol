@@ -34,7 +34,7 @@ contract EtherTrackNS is owned {
     function() public payable {}
 
     /// Constructor
-    /// Create a new ballot with $(_numProposals) different proposals.
+    /// Create a new EtherTrackNamingService
     function EtherTrackNS(address parent) public {
         _parent = parent;
     }
