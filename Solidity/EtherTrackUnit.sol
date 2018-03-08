@@ -1,4 +1,5 @@
-pragma solidity ^0.4.2;
+pragma solidity ^0.4.20;
+
 /// Owned contract as defined in Solidity documentation
 contract owned
 {
@@ -18,103 +19,31 @@ contract mortal is owned {
     }
 }
 
+/// Interface
 contract EtherTrackNS is owned {
-    /// Fired on entries update
-    event  updateEntries (address owner, uint64 GS1_GLN);
-
-    /// Hash table that pair address with public name
-    mapping(address => uint64) public InfoByNode;
-    mapping(address => bool)  registeredByNode;
-    mapping(uint64 => address)  nodeByName;
-    
-    /// EtherTrackNS parent to forward queries
-    address _parent;
-
-    ///Fallback function
-    function() public payable {}
-
-    /// Constructor
-    /// Create a new EtherTrackNamingService
-    function EtherTrackNS(address parent) public {
-        _parent = parent;
-    }
-    
     /// updateRegisters
-    /// Upadtes registry with the provided node/name pair
-    function updateRegisters(address node, uint64 GS1_GLN) internal returns(bool registered)
-    {
-        if (!registeredByNode[node])
-        {
-            /// Name already used
-            if (nodeByName[GS1_GLN] == address(0))
-            {
-                /// Mark as registered
-                registeredByNode[node] = true;
-                /// Update info
-                InfoByNode[node] = GS1_GLN;
-
-                registered = true;
-
-                require(registered);
-                updateEntries(node, GS1_GLN);
-            }
-            else
-            {
-                registered = false;
-            }
-
-            return registered;
-        }
-    }
-
-    /*
-     * ==== EXTERNAL ====
-     */
+    /// Upadtes registry with the provided node/name pair and a the secret for futur hashing
+    function updateRegisters(address node, uint64 GS1_GLN) internal returns(bool registered);
 
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
-    function getNameByNodeAddress(address node) external view returns(uint64 _name)
-    {
-        if (registeredByNode[node])
-            _name = InfoByNode[node];
-
-        return _name;
-    }
+    function getNameByNodeAddress(address node) external view returns(uint64 _name);
     
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
-    function exists(address node) external view returns(bool exists)
-    {
-        return registeredByNode[node];
-    }
+    function exists(address node) external view returns(bool exists);
     
     /// registerName
     /// Registers name and asociate it to caller address
-    function registerName(uint64 GS1_GLN) external payable returns(bool registered)
-    {
-        return updateRegisters(msg.sender, GS1_GLN);
-    }
+    function registerName(address node, uint64 GS1_GLN) external payable returns(bool registered);
 
     /// delegate
     /// Delegate name to specified address
-    function delegate (address to) external payable {
-        if(registeredByNode[msg.sender] && !registeredByNode[to])
-        {
-            uint64 callerNodeName = InfoByNode[msg.sender];
-            
-            ///Update entries
-            InfoByNode[to] = callerNodeName;
-            nodeByName[callerNodeName] = to;
-            
-            InfoByNode[msg.sender] = uint64(0);
-                        
-            registeredByNode[to] = true;
-        }
-    }
+    function delegate (address to) external payable;
 }
 
-/// Example for constructor : "07804652870010","00118292000000000001","123","11894", "0xff36aa89578a13910970367086de0bfcf1783359"
-contract TraceabilityUnit is owned, mortal {
+/// Example for constructor : "7804652870003", "12345678901234567890", "118292", "SN0123456789456123457", "123YYñ17", "0xdc04977a2078c8ffdf086d618d1f961b6c546222"
+contract EtherTrackUnit is owned, mortal {
     /*
     * According to GS1 standards, the GTIN/SN pair should be unique
     *
@@ -127,6 +56,7 @@ contract TraceabilityUnit is owned, mortal {
         string GS1_GSIN; /// Global Shipment Identification Number (GSIN) 
         string GS1_SSC; /// Serial Shipping Container Code (SSCC)
         string GS1_SN; /// Serial Number (SN) AI21
+        bytes32 GS1_hashedData;
     }
     
     UnitInfo _info; /// Store unit information
@@ -136,16 +66,18 @@ contract TraceabilityUnit is owned, mortal {
     /// Fired on tracebility unit creation
     event notifyCreation(address owner, string gtin, string sn);
     event notifyOwnershipTransfer(address to, string gtin, string sn);
+    event notifyEventOccured(string eventDesc, string gtin, string sn);
     event notifyLocationChanged(address newLocation, string gtin, string sn);
     
     /// Create a new traceability unit and validate its owner throught EtherTrackNS
-    function TraceabilityUnit (string gtin, string sscc, string gsin, string sn, address etherTrackNS) public {
+    function EtherTrackUnit (string gtin, string sscc, string gsin, string sn, address etherTrackNS) public {
         _etherTrackNS = etherTrackNS;
-        
+
         //Validate that owner is registred on the naming service and that GS1 AI are well formed
         require(validateGS1Constraints(gtin, sn) == true);
         require(etherTrackNS != address(0));
         require(validateNode(owner) == true);
+        //require((bytes(secret).length <= 32 ) == true);
 
         _info.GS1_GTIN = gtin;
         _info.GS1_GSIN = gsin;
@@ -154,12 +86,13 @@ contract TraceabilityUnit is owned, mortal {
         //Set location to owner
         _location = owner;
         
-        notifyCreation(owner, _info.GS1_GTIN, _info.GS1_SN);
+        
+        notifyCreation(owner, gtin, _info.GS1_SN);
     }
     
     /// Publicly exposed constraints
     function validateGS1Constraints(string gtin, string sn) internal pure returns (bool) {
-        return (bytes(gtin).length == 14 && bytes(sn).length <= 20); 
+        return (bytes(gtin).length <= 14 && bytes(sn).length <= 20); 
     }
     
     /// Transfer unit ownership to specified node
@@ -175,6 +108,12 @@ contract TraceabilityUnit is owned, mortal {
         _location = to;
         
         notifyLocationChanged(to, _info.GS1_GTIN, _info.GS1_SN);
+    }
+    
+        /// Change unit location to specified node
+    function addEvent(string eventDesc) external payable onlyOwner {
+        require(validateNode(owner) == true);
+        notifyEventOccured(_info.GS1_GTIN, _info.GS1_SN, eventDesc);
     }
     
     function changeEtherTrackNS(address newEtherTrackNS) external payable onlyOwner {
