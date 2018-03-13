@@ -1,4 +1,4 @@
-pragma solidity ^0.4.20;
+pragma solidity ^0.4.19;
 
 
 /// Owned contract as defined in Solidity documentation
@@ -44,16 +44,20 @@ contract EtherTrackNS is owned {
 }
 
 contract EtherTrackWarehouse is owned, mortal {
-    /// Fallback function
-    function() public payable { }
-    
+
+    event unitSent(address to, bytes32 hashedUnit);
+    event unitReceived(address from, bytes32 hashedUnit);
+
     string public Name;
     address _etherTrackNS; /// Store naming service contract reference
     
     mapping(bytes32 => bool) internal  _stock; /// Stock
     mapping(address => mapping(bytes32 => bool)) internal _sentBufferByDestination; /// Register units that are in pending reception state
-    mapping(address => mapping(bytes32 => bool)) internal _receivedBufferByDestination; /// Register units that are in pending reception state
-    
+    mapping(address => mapping(bytes32 => bool)) internal _receivedBufferByDestination; /// Register units that are in pending reception state    
+
+    /// Fallback function
+    function() public payable { }    
+
     function EtherTrackWarehouse (string name, address etherTrackNS) public {
         _etherTrackNS = etherTrackNS;
 
@@ -70,6 +74,7 @@ contract EtherTrackWarehouse is owned, mortal {
         require(_stock[hashedUnit] == false);
         
         _stock[hashedUnit] = true;
+	unitReceived(owner, hashedUnit);
     }
 
     /// Send specified unit to specified warehouse
@@ -82,6 +87,7 @@ contract EtherTrackWarehouse is owned, mortal {
         
         _sentBufferByDestination[to][hashedUnit] = true;
         EtherTrackWarehouse(to).receiveUnit(hashedUnit);
+	unitSent(to, hashedUnit);
     }
     
     /// Confirm unit received (called by sender contract)
@@ -104,6 +110,7 @@ contract EtherTrackWarehouse is owned, mortal {
         _receivedBufferByDestination[msg.sender][hashedUnit] = true;
         
         EtherTrackWarehouse(msg.sender).confirmUnitSent(hashedUnit);
+	unitReceived(msg.sender, hashedUnit);
     }
     
     /// Confirm unit received (called by sender contract)

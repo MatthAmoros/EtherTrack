@@ -1,23 +1,17 @@
-pragma solidity ^0.4.20;
+pragma solidity ^0.4.19;
+
 
 /// Owned contract as defined in Solidity documentation
-contract owned {
+contract owned
+{
     function owned() public { owner = msg.sender; }
+    function delegateOwnership(address newOwner) public onlyOwner { owner = newOwner; } 
     address owner;
     
         modifier onlyOwner {
         require(msg.sender == owner);
         _;
     }
-}
-
-/// Data store interface
-contract EtherTrackDataStore {
-    	function getNamebyNode (address node) external view returns (uint64);    
-    	function getNodebyName (uint64 name) external view returns (address);    
-    	function setNamebyNode (address node, uint64 name) external returns (uint64);
-
-	function delegateOwnership(address newOwner) public;
 }
 
 contract EtherTrackNS is owned {
@@ -33,11 +27,20 @@ contract EtherTrackNS is owned {
 
     /// Constructor
     function EtherTrackNS(address parent, address dataStore) public {
-	require(dataStore != address(0));
         _parent = parent;
         _dataStore = dataStore;
     }
+
+
+    function createDataStore() public returns (address) {
+	require(_dataStore == address(0));
+        _dataStore = new EtherTrackDataStore();
+	return _dataStore;
+    }
     
+    function getDataStoreAddress() public view returns(address) { return  _dataStore;}
+    function setDataStoreAddress(address dataStore) public onlyOwner {  _dataStore = dataStore;}
+
     /// updateRegisters
     /// Upadtes registry with the provided node/name pair and a the secret for futur hashing
     function updateRegisters(address node, uint64 GS1_GLN) internal returns(bool registered)
@@ -47,8 +50,8 @@ contract EtherTrackNS is owned {
             /// Name not already used
             if (EtherTrackDataStore(_dataStore).getNodebyName(GS1_GLN) == address(0))
             {
-	        	//Update data store
-	        	EtherTrackDataStore(_dataStore).setNamebyNode(node, GS1_GLN);
+        	//Update data store
+        	EtherTrackDataStore(_dataStore).setNamebyNode(node, GS1_GLN);
 
                 if(_parent != address(0))
                     EtherTrackNS(_parent).registerName(node, GS1_GLN); //Notify parent
@@ -63,10 +66,6 @@ contract EtherTrackNS is owned {
             return registered;
         }
     }
-
-    /*
-     * ==== EXTERNAL ====
-     */
 
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
@@ -102,18 +101,6 @@ contract EtherTrackNS is owned {
         else
             return updateRegisters(node, GS1_GLN);
     }
-
-    /// delegate
-    /// Delegate name to specified address
-    function delegate (address to) external payable {
-        uint64 callerName = EtherTrackDataStore(_dataStore).getNamebyNode(msg.sender);
-        if((callerName != 0) && (EtherTrackDataStore(_dataStore).getNamebyNode(to) == 0))
-        {
-            ///Update entries
-            EtherTrackDataStore(_dataStore).setNamebyNode(msg.sender, 0);
-            EtherTrackDataStore(_dataStore).setNamebyNode(to, callerName);
-        }
-    }
     
     function kill() internal onlyOwner {
         //Preserver data
@@ -121,3 +108,41 @@ contract EtherTrackNS is owned {
         selfdestruct(owner);
     }
 }
+
+
+
+/// Mortal contract as defined in Solidity documentation
+contract mortal is owned {
+    function kill() internal onlyOwner {
+        selfdestruct(owner);
+    }
+}
+/// Storage contract
+contract EtherTrackDataStore is owned, mortal {
+    
+    /// Hash table that pair address with public name
+    mapping(address => uint64) private nameByNode;
+    mapping(address => bool) private registeredByNode;
+    mapping(uint64 => address) private nodeByName; 
+    
+    function EtherTrackDataStore() public { 
+
+    }
+    
+    function getNamebyNode (address node) external view returns (uint64) {
+        return nameByNode[node];
+    }
+    
+    function getNodebyName (uint64 name) external view returns (address) {
+        return nodeByName[name];
+    }
+    
+    function setNamebyNode (address node, uint64 name) external onlyOwner returns (uint64) {
+        require(!registeredByNode[node]);
+        nameByNode[node] = name;
+        nodeByName[name] = node;
+        registeredByNode[node] = true;
+    }
+}
+
+

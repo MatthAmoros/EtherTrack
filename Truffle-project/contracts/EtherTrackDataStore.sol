@@ -1,10 +1,11 @@
-pragma solidity ^0.4.20;
+pragma solidity ^0.4.19;
 
 /// Owned contract as defined in Solidity documentation
 contract owned
 {
     function owned() public { owner = msg.sender; }
     function delegateOwnership(address newOwner) public onlyOwner { owner = newOwner; } 
+    function getOwnerAddress() view public returns(address) { return owner; }
     address owner;
     
         modifier onlyOwner {
@@ -25,10 +26,14 @@ contract EtherTrackDataStore is owned, mortal {
     /// Hash table that pair address with public name
     mapping(address => uint64) private nameByNode;
     mapping(address => bool) private registeredByNode;
-    mapping(uint64 => address) private nodeByName;
+    mapping(uint64 => address) private nodeByName;    
     
-    
-    function EtherTrackDataStore() public { }
+    function EtherTrackDataStore(address target) public { 
+	if(target != address(0))
+	{
+		delegateOwnership(target);
+	}
+    }
     
     function getNamebyNode (address node) external view returns (uint64) {
         return nameByNode[node];
@@ -43,5 +48,6 @@ contract EtherTrackDataStore is owned, mortal {
         nameByNode[node] = name;
         nodeByName[name] = node;
         registeredByNode[node] = true;
+	return name;
     }
 }

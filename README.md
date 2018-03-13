@@ -17,6 +17,11 @@ The nature of the blockchain system address a lot of issues that you must face w
 * Descentralized architecture to ensure data integrity
 * Smart-Contract source code can be read and approved by everyone, data can not be tampered with.
 * Data format is publicly available, anyone can build an interface and get data from the chain.
+## Used here :
+* Truffle :
+* Remix :
+* JQuery :
+* Solidity :
 
 
 
