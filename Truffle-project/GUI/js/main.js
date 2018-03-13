@@ -1,6 +1,6 @@
 var etherTrackNS_ABI;
-const myABI_PROVIDER_EtherTrackNS = "http://192.168.2.243/Content/Applications/EtherTrackNS.json";
-const myABI_PROVIDER_EtherTrackWarehouse = "http://192.168.2.243/Content/Applications/EtherTrackWarehouse.json";
+const myABI_PROVIDER_EtherTrackNS = "http://[SERVER]/Content/Applications/EtherTrackNS.json";
+const myABI_PROVIDER_EtherTrackWarehouse = "http://[SERVER]/Content/Applications/EtherTrackWarehouse.json";
 const EtherTrackNS_Address = "0x9fbda871d559710256a2502a2517b794b482db40";
 const EtherTrackWarehouse_Address = "0xfb88de099e13c3ed21f80a7a1e49f8caecf10df6";
 

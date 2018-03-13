@@ -32,12 +32,12 @@ var myNS;
 		.then(function()
 		{
 			//Register name
-			return myNS.registerName("", 118292);
+			return myNS.registerName("", 12358965724125); //Register this node with 12358965724125
 		})	
 		.then(function()
 		{
 			//Create warehouse
-			return deployer.deploy(EtherTrackWarehouse, "Andinexia", myNS.address, {gas: 5000000});
+			return deployer.deploy(EtherTrackWarehouse, "Test", myNS.address, {gas: 5000000}); //Create Test warehouse
 		})	
 
 };
