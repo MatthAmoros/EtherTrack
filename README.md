@@ -27,11 +27,13 @@ Current version features :
 	* A basic GUI designed with Javascript to connect to a local node. It can deploy contract and do basic contracts calls.
 	* Truffle deploy scripts and refactored contracts.
 	
-## Used here :
+## Built with :
 * [Truffle](https://github.com/trufflesuite/truffle) : Ethereum development framework 
 * [Remix](https://remix.ethereum.org/) : Solidity IDE
 * [JQuery](https://jquery.com/) : Javascript library
 * [Solidity](https://solidity.readthedocs.io/en/v0.4.21/) : Smart contract language
+* [Web3.js](https://github.com/ethereum/web3.js) : Ethereum JavaScript API
+* [MetaMask](https://github.com/MetaMask) : Ethereum chrome extension
 
 
 
