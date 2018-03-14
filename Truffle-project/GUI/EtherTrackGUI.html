@@ -5,8 +5,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@0.19.0/dist/web3.min.js"></script>
     <script src="./lib/truffle/truffle-contract.min.js"> </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"> </script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
     <script src="./js/main.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://192.168.2.243/Content/css?v=ESl8cpkWZ86s3v-AwLwRm09LC6jrJaWcA8YutE3qI7c1">
 
 </head>
 <body>
@@ -22,6 +24,43 @@
 		<tbody>
 		</tbody>
 	</table>
+	<div>
+	<input type="button" value="Validate Hash" id="btnValHash"/>
+	</div>
+	<div>
+	<input type="button" value="Add existing name service" id="btnAddNS"/>
+	<input placeholder="address" id="NSAddress"/>
+	</div>
+	<div>
+	<input type="button" value="Add existing warehouse" id="btnAddWH"/>
+	<input placeholder="address" id="whAddress"/>
+	</div>
+	<div>
+	<input type="button" value="Create warehouse" id="btnCreatWH"/>
+	<input placeholder="EtherTrackNS Address" id="nsAddress"/>
+	<input placeholder="Warehouse name" id="whName"/>
+	</div>
+
+	<div>
+	<br/>
+	Warehouses : 
+	<ul class="list-group" id="WHList">
+	</ul>
+	<div>
+
+	<div>
+	<br/>
+	Name services : 
+	<ul class="list-group" id="NSList">
+	</ul>
+	<div>
+
+	<div>
+	<br/>
+	Known nodes : 
+	<ul class="list-group" id="nodeList">
+	</ul>
+	<div>
 </div>
 </body>
 </html>

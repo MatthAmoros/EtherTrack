@@ -19,7 +19,7 @@ contract mortal is owned {
     }
 }
 
-/// Interface
+// Interface
 contract EtherTrackNS is owned {
     /// updateRegisters
     /// Upadtes registry with the provided node/name pair and a the secret for futur hashing
@@ -28,6 +28,10 @@ contract EtherTrackNS is owned {
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
     function getNameByNodeAddress(address node) external view returns(uint64 _name);
+
+   /// getNodeAddressByName
+   /// Returns node address corresponding to provided name
+   function getNodeAddressByName(uint64 GS1_GLN) external view returns(address _node);
     
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address

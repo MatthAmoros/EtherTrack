@@ -29,6 +29,10 @@ contract EtherTrackNS is owned {
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
     function getNameByNodeAddress(address node) external view returns(uint64 _name);
+
+   /// getNodeAddressByName
+   /// Returns node address corresponding to provided name
+   function getNodeAddressByName(uint64 GS1_GLN) external view returns(address _node);
     
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
@@ -72,9 +76,7 @@ contract EtherTrackWarehouse is owned, mortal {
         bytes32 hashedUnit = keccak256(unit);
         
         require(_stock[hashedUnit] == false);
-        
-        _stock[hashedUnit] = true;
-	unitReceived(owner, hashedUnit);
+	this.receiveUnit(hashedUnit);
     }
 
     /// Send specified unit to specified warehouse
@@ -82,45 +84,22 @@ contract EtherTrackWarehouse is owned, mortal {
         bytes32 hashedUnit = keccak256(unit);
         
         require(to != address(this));
-        require(_stock[hashedUnit]); // Is in stock
+        require(_stock[hashedUnit] == true); // Is in stock
         require(_sentBufferByDestination[to][hashedUnit] == false); // Not already sent
         
         _sentBufferByDestination[to][hashedUnit] = true;
-        EtherTrackWarehouse(to).receiveUnit(hashedUnit);
+        EtherTrackWarehouse(to).receiveUnit(hashedUnit);	
+        _stock[hashedUnit] = false;        
+
 	unitSent(to, hashedUnit);
-    }
-    
-    /// Confirm unit received (called by sender contract)
-    function confirmUnitSent(bytes32 hashedUnit) public payable returns (bytes32) {
-        require(_sentBufferByDestination[msg.sender][hashedUnit]); /// Caller got one unit in the _sentBufferByDestination
-        
-        _sentBufferByDestination[msg.sender][hashedUnit] = false;
-        _stock[hashedUnit] = false;
-        
-        EtherTrackWarehouse(msg.sender).confirmUnitReceived(owner, hashedUnit);
-        
-        return hashedUnit;
     }
     
     /// Receive unit (called by sender contract)
     function receiveUnit(bytes32 hashedUnit) external payable  {
         require(msg.sender != address(this));
-        require(_receivedBufferByDestination[msg.sender][hashedUnit] == false);
-        
-        _receivedBufferByDestination[msg.sender][hashedUnit] = true;
-        
-        EtherTrackWarehouse(msg.sender).confirmUnitSent(hashedUnit);
+
+	_stock[hashedUnit] = true;        
 	unitReceived(msg.sender, hashedUnit);
-    }
-    
-    /// Confirm unit received (called by sender contract)
-    function confirmUnitReceived(address from, bytes32 hashedUnit) public payable returns (bytes32) {
-        require(_receivedBufferByDestination[from][hashedUnit]); /// Caller got one unit in the _sentBufferByDestination
-        
-        _receivedBufferByDestination[from][hashedUnit] = false;
-        //_stock[unit] = true;
-        
-        return hashedUnit;
     }
     
     /// Validate that provided node exists

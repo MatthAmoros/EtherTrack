@@ -78,6 +78,18 @@ contract EtherTrackNS is owned {
         
         return _name;
     }
+
+    /// getNameByNodeAddress
+    /// Returns name corresponding to provided node address
+    function getNodeAddressByName(uint64 GS1_GLN) external view returns(address _node)
+    {
+        _node = EtherTrackDataStore(_dataStore).getNodebyName(GS1_GLN);
+        
+        if(_parent != address(0) && _node == address(0))
+            _node = EtherTrackNS(_parent).getNodeAddressByName(GS1_GLN);
+        
+        return _node;
+    }
     
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
