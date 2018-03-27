@@ -8,11 +8,19 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"> </script>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
+	<!-- Dapp Starts here -->
+    <script src="./js/constants.js"></script>
+    <script src="./js/Wrappers/NameService.js"></script>
+    <script src="./js/Wrappers/Warehouse.js"></script>
     <script src="./js/main.js"></script>
+	<!-- End of Dapp inclusions -->
 
 </head>
 <body>
 <div>
+	<div class="well" id="header">
+
+	</div>
 	<table class="table" id="eventsTable">
 		<thead>
 		<tr>
@@ -29,7 +37,7 @@
 	</div>
 	<div>
 	<input type="button" value="Add existing name service" id="btnAddNS"/>
-	<input placeholder="address" id="NSAddress"/>
+	<input placeholder="address" id="nsAddAddress"/>
 	</div>
 	<div>
 	<input type="button" value="Add existing warehouse" id="btnAddWH"/>
@@ -41,21 +49,21 @@
 	<input placeholder="Warehouse name" id="whName"/>
 	</div>
 
-	<div>
+	<div class="well">
 	<br/>
 	Warehouses : 
 	<ul class="list-group" id="WHList">
 	</ul>
 	<div>
 
-	<div>
+	<div class="well">
 	<br/>
 	Name services : 
 	<ul class="list-group" id="NSList">
 	</ul>
 	<div>
 
-	<div>
+	<div class="well">
 	<br/>
 	Known nodes : 
 	<ul class="list-group" id="nodeList">

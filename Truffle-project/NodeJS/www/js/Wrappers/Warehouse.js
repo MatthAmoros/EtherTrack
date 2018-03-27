@@ -1,58 +1,47 @@
-module.exports = class Warehouse {
-    constructor(warehouseAddress, nsAddress, name, provider, abiAddress) {
+class Warehouse {
+    constructor(warehouseAddress, nsAddress, name, provider) {
         this.address = warehouseAddress;
         this.provider = provider;
         this.nsAddress = nsAddress;
         this.name = name;
-        this.abiAddress = abiAddress;
 
-        $.getJSON(myABI_PROVIDER_EtherTrackWarehouse, function (data) { this.abi = data; });
-        console.log("Parsing ABI done. (Warehouse)");
+	var wh = this;
 
-        if (warehouseAddress == "") // No address specified, create new one
-        {
-            createWarehouse(this.provider, this.nsAddress, this.name);
-        }
-    }
+        $.getJSON(myABI_PROVIDER_EtherTrackWarehouse, function (data) {
+            console.log("Parsing ABI done. (Warehouse)");
 
-    sendUnit(to, unit, provider) {
-        //Declare contract according to parsed ABI
-        var myWHContract = TruffleContract(this.abi);
-        //Setting contract provider (Metmask / local node)
-        myWHContract.setProvider(provider.currentProvider);
-        var contractInstance;
-        var contractName;
+            wh.abi = data;
 
-        myWHContract.at(from).then(function (instance) {
-            contractInstance = instance;
-            return instance.sendUnitTo(to, unit);
+            if (wh.address == null) // No address specified, create new one
+            {
+                wh.createWarehouse(wh.nsAddress, wh.name);
+            }
+	    else
+	    {
+              wh.startEventsListner();
+            }
         });
     }
 
-    createUnit(whAddress, unit, provider) {
+    //
+    // Start contracts events listener
+    //
+    startEventsListner() {
+        console.log("Parsing done, waiting for events... (Warehouse)");
         //Declare contract according to parsed ABI
-        var myWHContract = TruffleContract(this.abi);
+	if(this.truffleContract === undefined)
+	{
+        	let myWHContract = TruffleContract(this.abi);
+		this.truffleContract = myWHContract;
+	}
+	let myWHContract = this.truffleContract;
+
         //Setting contract provider (Metmask / local node)
-        myWHContract.setProvider(provider.currentProvider);
+        myWHContract.setProvider(this.provider.currentProvider);
         var contractInstance;
         var contractName;
 
-        myWHContract.at(whAddress).then(function (instance) {
-            contractInstance = instance;
-            return instance.createUnit(unit); //Calling contract method
-        });
-    }
-
-    createWarehouse(provider, ethNSAddress, name) {
-        console.log("Creating warehouse ...." + name + " NS : " + ethNSAddress);
-        //Declare contract according to parsed ABI
-        var myWHContract = TruffleContract(data);
-        //Setting contract provider (Metmask / local node)
-        myWHContract.setProvider(provider.currentProvider);
-        var contractInstance;
-        var contractName;
-
-        myWHContract.new(name, EtherTrackNS_Address, { from: provider.eth.accounts[0], gas: 5000000 }).then(function (instance) {
+        myWHContract.at(this.address).then(function (instance) {
             contractInstance = instance;
             return instance.Name.call().then(function (result) { contractName = result; console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address); displayWarehouse(contractName, contractInstance.address); });
         })
@@ -69,4 +58,78 @@ module.exports = class Warehouse {
                 });
             });
     }
-};
+
+    //
+    //Send unit to specified address
+    //
+    sendUnit(to, unit, provider) {
+        //Declare contract according to parsed ABI
+	if(this.truffleContract === undefined)
+	{
+        	let myWHContract = TruffleContract(this.abi);
+		this.truffleContract = myWHContract;
+	}
+	let myWHContract = this.truffleContract;
+
+        //Setting contract provider (Metmask / local node)
+        myWHContract.setProvider(provider.currentProvider);
+        var contractInstance;
+
+        myWHContract.at(from).then(function (instance) {
+            contractInstance = instance;
+            return instance.sendUnitTo(to, unit);
+        });
+    }
+
+    //
+    //Create unit in current warehouse
+    //
+    createUnit(unit) {
+        //Declare contract according to parsed ABI
+ 	if(this.truffleContract === undefined)
+	{
+        	let myWHContract = TruffleContract(this.abi);
+		this.truffleContract = myWHContract;
+	}
+	let myWHContract = this.truffleContract;
+
+        //Setting contract provider (Metmask / local node)
+        myWHContract.setProvider(this.provider.currentProvider);
+        var contractInstance;
+
+	console.log("Creating unit : " + unit + " at " + this.address);
+
+        myWHContract.at(this.address).then(function (instance) {
+            contractInstance = instance;
+            return instance.createUnit(unit); //Calling contract method
+        });
+    }
+
+    //
+    //Create a new warehouse
+    //
+    createWarehouse(ethNSAddress, name) {
+        console.log("Creating warehouse ...." + name + " NS : " + ethNSAddress);
+        //Declare contract according to parsed ABI
+	if(this.truffleContract === undefined)
+	{
+        	let myWHContract = TruffleContract(this.abi);
+		this.truffleContract = myWHContract;
+	}
+	let myWHContract = this.truffleContract;
+
+        //Setting contract provider (Metmask / local node)
+        myWHContract.setProvider(provider.currentProvider);
+        var contractInstance;
+        var contractName;
+	var contractObject = this;
+
+        myWHContract.new(name, ethNSAddress, { from: contractObject.provider.eth.accounts[0], gas: 5000000 }).then(function (instance) {
+            contractInstance = instance;
+            return instance.Name.call().then(function (result) { contractName = result; contractObject.address = contractInstance.address; console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address);});
+        })
+            .then(function (instance, response) {
+                contractObject.startEventsListner();
+            });
+    }
+}
