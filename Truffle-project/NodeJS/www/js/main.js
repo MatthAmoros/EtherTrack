@@ -2,7 +2,7 @@ var etherTrackNS_ABI;
 var provider;
 var bindedContract = [];
 
-window.addEventListener("load", function () {
+$(document).ready(function () {
     $("#btnAddWH").click(function () {
         let contractAddress = $("#whAddress").val();
 
@@ -51,12 +51,11 @@ window.addEventListener("load", function () {
         console.log("MetaMask/Mist not detected, trying to contact local node...");
         let Web3 = require("web3");
 
+	//Local node
         provider = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
-        provider.sendAsync = Web3.providers.HttpProvider.prototype.send
 
         if (typeof provider !== "undefined") {
             console.log("Connected to : " + provider.currentProvider.host);
-
             startDapp(provider);
         }
     }
@@ -66,8 +65,13 @@ function startDapp(provider) {
 
     if (!provider.isConnected()) {
         console.log("Not connected")
+	//Metamask needed 
+	$('#main').replaceWith('<div><img src="./img/metamask-required.png" href="https://metamask.io/"/></div>');
         return;
     }
+        provider.sendAsync = Web3.providers.HttpProvider.prototype.send
+	provider.eth.defaultAccount = provider.eth.accounts[0]
+
     //Get user preferences
     if (!sessionStorage.accountInformationSent) {
         $.ajax({
@@ -78,8 +82,9 @@ function startDapp(provider) {
             dataType: "json",
             success: function (result) {
                 console.log("Loading user preferences ...");
-                result.warehouse.forEach(function (wh) { let myWarehouse = new Warehouse(wh.address, null, null, provider, null); bindedContract.push(myWarehouse); ;});
-                result.ns.forEach(function (ns) { let myNameService = new NameService(ns.address, provider, null); bindedContract.push(myNameService); ;});
+		console.log(result);
+                result.warehouse.forEach(function (wh) { let myWarehouse = new Warehouse(wh.address, null, null, provider); bindedContract.push(myWarehouse);});
+                result.ns.forEach(function (ns) { let myNameService = new NameService(ns.address, provider, null); bindedContract.push(myNameService);});
             }
         })
 
@@ -108,13 +113,16 @@ function displayWarehouse(name, address) {
     $("#whBtnCreate-" + address.substring(0, 10)).click(function () {
         let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
 	let contract = bindedContract.find(x => x.address == address);
+	console.log(contract);
         contract.createUnit(unitCode);
     });
 
     $("#whBtnSend-" + address.substring(0, 10)).click(function () {
         let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
         let whAddressTo = $("#whDestAddr-" + address.substring(0, 10)).val();
-        sendUnit(address, whAddressTo, unitCode, provider);
+	let contract = bindedContract.find(x => x.address == address);
+	console.log(contract);
+        contract.sendUnit(whAddressTo, unitCode, provider);
     });
 }
 

@@ -38,7 +38,7 @@ app.post('/accountConnected', function (req, res) {
 		usersDatabase.users.push({account: req.body.address, warehouse:[], ns:[]});
 		fs.writeFile(  __dirname + "/www/" + "db/database.json", JSON.stringify( usersDatabase ), "utf8");
 	}
-
+	console.log("[POST] Sending user preferences to " + ssn.account);
 	res.send(usersDatabase.users.find(x => x.account === req.body.address));
 })
 
@@ -50,9 +50,13 @@ app.post('/createWarehouse', function (req, res) {
 	//Add to database
 	if(usersDatabase.users.find(x => x.account === req.body.address) != undefined)
 	{
-		let userData = usersDatabase.users.find(x => x.account === req.body.address);
-		userData.warehouse.push({name : req.body.whName, address : req.body.whAddress});
-		fs.writeFile(  __dirname + "/www/" + "db/database.json", JSON.stringify( usersDatabase ), "utf8");
+		var userData = usersDatabase.users.find(x => x.account === req.body.address);
+
+		if(userData.warehouse.find(x => x.address === req.body.whAddress) == undefined)
+		{
+			userData.warehouse.push({name : req.body.whName, address : req.body.whAddress});
+			fs.writeFile(  __dirname + "/www/" + "db/database.json", JSON.stringify( usersDatabase ), "utf8");
+		}
 	}
 
 	res.send(usersDatabase.users.find(x => x.account === req.body.address));
@@ -67,8 +71,12 @@ app.post('/createNameService', function (req, res) {
 	if(usersDatabase.users.find(x => x.account === req.body.address) != undefined)
 	{
 		let userData = usersDatabase.users.find(x => x.account === req.body.address);
-		userData.ns.push({address : req.body.nsAddress});
-		fs.writeFile(  __dirname + "/www/" + "db/database.json", JSON.stringify( usersDatabase ), "utf8");
+
+		if(userData.ns.find(x => x.address === req.body.nsAddress) == undefined)
+		{
+			userData.ns.push({address : req.body.nsAddress});
+			fs.writeFile(  __dirname + "/www/" + "db/database.json", JSON.stringify( usersDatabase ), "utf8");
+		}
 	}
 
 	res.send(usersDatabase.users.find(x => x.account === req.body.address));

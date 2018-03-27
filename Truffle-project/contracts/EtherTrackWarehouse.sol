@@ -72,11 +72,12 @@ contract EtherTrackWarehouse is owned, mortal {
         Name = name;
     }
     
-    function createUnit(string unit) public onlyOwner {
+    function createUnit(string unit) external payable onlyOwner {
         bytes32 hashedUnit = keccak256(unit);
         
         require(_stock[hashedUnit] == false);
-	this.receiveUnit(hashedUnit);
+	_stock[hashedUnit] = true;        
+	unitReceived(msg.sender, hashedUnit);
     }
 
     /// Send specified unit to specified warehouse
@@ -97,6 +98,7 @@ contract EtherTrackWarehouse is owned, mortal {
     /// Receive unit (called by sender contract)
     function receiveUnit(bytes32 hashedUnit) external payable  {
         require(msg.sender != address(this));
+	require(_stock[hashedUnit] == false);
 
 	_stock[hashedUnit] = true;        
 	unitReceived(msg.sender, hashedUnit);

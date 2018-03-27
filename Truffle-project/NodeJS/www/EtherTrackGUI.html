@@ -17,7 +17,10 @@
 
 </head>
 <body>
-<div>
+
+<div id="header"></div> 
+
+<div id="main">
 	<div class="well" id="header">
 
 	</div>
@@ -71,4 +74,10 @@
 	<div>
 </div>
 </body>
+
+    <script> 
+    $(function(){
+      $("#header").load("./views/header.html"); 
+    });
+    </script> 
 </html>

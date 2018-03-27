@@ -40,6 +40,7 @@ class Warehouse {
         myWHContract.setProvider(this.provider.currentProvider);
         var contractInstance;
         var contractName;
+	var contractObject = this;
 
         myWHContract.at(this.address).then(function (instance) {
             contractInstance = instance;
@@ -56,6 +57,18 @@ class Warehouse {
                     console.log(response.args.hashedUnit + " sent to " + response.args.to);
                     logEvents("EtherTrackWarehouse (" + contractName + ")", "unitSent", response.args.hashedUnit + " to " + response.args.to);
                 });
+
+
+		//Send update to server
+            $.ajax({
+                url: '/createWarehouse',
+                type: "POST",
+                data: JSON.stringify({ address: contractObject.provider.eth.coinbase, whAddress: contractInstance.address, whName: contractName}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                }
+            });
             });
     }
 
@@ -75,9 +88,9 @@ class Warehouse {
         myWHContract.setProvider(provider.currentProvider);
         var contractInstance;
 
-        myWHContract.at(from).then(function (instance) {
+        myWHContract.at(this.address).then(function (instance) {
             contractInstance = instance;
-            return instance.sendUnitTo(to, unit);
+            return instance.sendUnitTo(unit, to);
         });
     }
 
@@ -85,22 +98,16 @@ class Warehouse {
     //Create unit in current warehouse
     //
     createUnit(unit) {
+	var contractObject = this;
         //Declare contract according to parsed ABI
- 	if(this.truffleContract === undefined)
-	{
-        	let myWHContract = TruffleContract(this.abi);
-		this.truffleContract = myWHContract;
-	}
-	let myWHContract = this.truffleContract;
-
+        let myWHContract = TruffleContract(contractObject.abi);
         //Setting contract provider (Metmask / local node)
-        myWHContract.setProvider(this.provider.currentProvider);
-        var contractInstance;
+        myWHContract.setProvider(contractObject.provider.currentProvider);	
 
-	console.log("Creating unit : " + unit + " at " + this.address);
+	console.log("Creating unit : " + unit + " at " + contractObject.address);
+	console.log(contractObject.provider.eth.accounts[0]);
 
-        myWHContract.at(this.address).then(function (instance) {
-            contractInstance = instance;
+        myWHContract.at(contractObject.address, {from: contractObject.provider.eth.accounts[0]}).then(function (instance) {
             return instance.createUnit(unit); //Calling contract method
         });
     }
@@ -109,20 +116,22 @@ class Warehouse {
     //Create a new warehouse
     //
     createWarehouse(ethNSAddress, name) {
+        var contractInstance;
+        var contractName;
+	var contractObject = this;
+
         console.log("Creating warehouse ...." + name + " NS : " + ethNSAddress);
         //Declare contract according to parsed ABI
 	if(this.truffleContract === undefined)
 	{
-        	let myWHContract = TruffleContract(this.abi);
+        	let myWHContract = TruffleContract(contractObject.abi);
 		this.truffleContract = myWHContract;
 	}
-	let myWHContract = this.truffleContract;
+	let myWHContract = contractObject.truffleContract;
 
         //Setting contract provider (Metmask / local node)
-        myWHContract.setProvider(provider.currentProvider);
-        var contractInstance;
-        var contractName;
-	var contractObject = this;
+        myWHContract.setProvider(contractObject.provider.currentProvider);
+
 
         myWHContract.new(name, ethNSAddress, { from: contractObject.provider.eth.accounts[0], gas: 5000000 }).then(function (instance) {
             contractInstance = instance;

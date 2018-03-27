@@ -65,7 +65,7 @@ class NameService {
 
 		displayNameService("", instance.address);
             
-
+		//Send update to server
             $.ajax({
                 url: '/createNameService',
                 type: "POST",

@@ -23,9 +23,11 @@ The nature of the blockchain system address a lot of issues that you must face w
 
 ## Current version
 Current version features :
-	* 3 Contracts : EtherTrackNS (Naming Service) EtherTrackWarehouse (Manage traceability Unit) and EtherTrackDatastore (a data store proxy)
-	* A basic GUI designed with Javascript to connect to a local node. It can deploy contract and do basic contracts calls.
-	* Truffle deploy scripts and refactored contracts.
+* 3 Contracts : EtherTrackNS (Naming Service) EtherTrackWarehouse (Manage traceability Unit) and EtherTrackDatastore (a data store proxy)
+* A basic GUI designed with NodeJS to connect to a local node. It can deploy contracts and do basic contracts calls.
+* Truffle deploy scripts and refactored contracts.
+
+## Installing
 	
 ## Built with :
 * [Truffle](https://github.com/trufflesuite/truffle) : Ethereum development framework 
@@ -34,6 +36,8 @@ Current version features :
 * [Solidity](https://solidity.readthedocs.io/en/v0.4.21/) : Smart contract language
 * [Web3.js](https://github.com/ethereum/web3.js) : Ethereum JavaScript API
 * [MetaMask](https://github.com/MetaMask) : Ethereum chrome extension
+* [Node.js](https://nodejs.org/en/) : Asynchronous event driven JavaScript runtime
+* [Express](http://expressjs.com/) : Web framework for Node.js
 
 
 
