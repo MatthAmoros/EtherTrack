@@ -69,6 +69,6 @@ function generateHash() {
 	let hashed = keccak256(codeToHash);
 	knownHash.push({hash: hashed, plain:codeToHash});
 	console.log(knownHash);
-	$('#main').innerHTML = $('#main').innerHTML.replace(hashed, codeToHash);
+	$('#eventsTable > tbody').innerHTML = $('#main').innerHTML.replace(hashed, codeToHash);
 
 }
