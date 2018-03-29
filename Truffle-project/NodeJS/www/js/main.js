@@ -1,6 +1,7 @@
 var etherTrackNS_ABI;
 var provider;
-var bindedContract = [];
+
+
 
 $(document).ready(function () {
     $("#btnAddWH").click(function () {
@@ -135,3 +136,5 @@ function displayNameService(name, address) {
 function displayNodeName(name, address) {
     $('#nodeList').append("<li class=\"list-group-item\">" + name + " at : " + address + "</li>");
 }
+
+

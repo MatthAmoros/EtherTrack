@@ -1,4 +1,7 @@
 var currentAccount = "";
+var bindedContract = [];
+var knownHash = [];
+
 function accountUpdate(account)
 {
 	if(currentAccount != account)
@@ -59,4 +62,13 @@ function reloadPreference()
                 result.ns.forEach(function (ns) { let myNameService = new NameService(ns.address, provider, null); bindedContract.push(myNameService);});
             }
         })
+}
+
+function generateHash() {
+	let codeToHash = $("#strToHash").val();
+	let hashed = keccak256(codeToHash);
+	knownHash.push({hash: hashed, plain:codeToHash});
+	console.log(knownHash);
+	$('#main').innerHTML = $('#main').innerHTML.replace(hashed, codeToHash);
+
 }

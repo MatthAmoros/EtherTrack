@@ -3,13 +3,14 @@
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3@0.19.0/dist/web3.min.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/web3@0.19.0/dist/web3.min.js"></script> -->
     <script src="./lib/truffle/truffle-contract.min.js"> </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"> </script>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
 	<!-- Dapp Starts here -->
     <script src="./js/constants.js"></script>
+    <script src="./js/tools.js"></script>
     <script src="./js/Wrappers/NameService.js"></script>
     <script src="./js/Wrappers/Warehouse.js"></script>
     <script src="./js/dapp.js"></script>
@@ -37,7 +38,8 @@
 		</tbody>
 	</table>
 	<div>
-	<input type="button" value="Validate Hash" id="btnValHash"/>
+	<input type="button" value="Validate Hash" id="btnValHash" onclick="generateHash()"/>
+	<input placeholder="string to hash" id="strToHash"/>
 	</div>
 	<div>
 	<input type="button" value="Add existing name service" id="btnAddNS"/>
