@@ -30,14 +30,14 @@
       "type": "function"
     }
   ],
-  "bytecode": "0x6060604052336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506101d2806100536000396000f30060606040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630c4f65bd14610051578063bb1c2edc146100a6575b600080fd5b341561005c57600080fd5b6100646100df565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156100b157600080fd5b6100dd600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610108565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561016357600080fd5b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505600a165627a7a72305820ea0d90de7532f745c7b509bf9fcf7a375b73b207bdf3fd676ec723674a57fa5e0029",
-  "deployedBytecode": "0x60606040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630c4f65bd14610051578063bb1c2edc146100a6575b600080fd5b341561005c57600080fd5b6100646100df565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156100b157600080fd5b6100dd600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610108565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561016357600080fd5b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505600a165627a7a72305820ea0d90de7532f745c7b509bf9fcf7a375b73b207bdf3fd676ec723674a57fa5e0029",
+  "bytecode": "0x6060604052336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506101d2806100536000396000f30060606040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630c4f65bd14610051578063bb1c2edc146100a6575b600080fd5b341561005c57600080fd5b6100646100df565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156100b157600080fd5b6100dd600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610108565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561016357600080fd5b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505600a165627a7a723058203056f045cf2a0f8977a21f88360c5ad7987988ff3012d9bf9b402079e22706b60029",
+  "deployedBytecode": "0x60606040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630c4f65bd14610051578063bb1c2edc146100a6575b600080fd5b341561005c57600080fd5b6100646100df565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156100b157600080fd5b6100dd600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050610108565b005b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561016357600080fd5b806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505600a165627a7a723058203056f045cf2a0f8977a21f88360c5ad7987988ff3012d9bf9b402079e22706b60029",
   "sourceMap": "486:104:0:-;;;137:10;129:5;;:18;;;;;;;;;;;;;;;;;;486:104;;;;;;",
   "deployedSourceMap": "486:104:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;244:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;155:83;;;;;;;;;;;;;;;;;;;;;;;;;;;;244:73;291:7;309:5;;;;;;;;;;;302:12;;244:73;:::o;155:83::-;401:5;;;;;;;;;;;387:19;;:10;:19;;;379:28;;;;;;;;227:8;219:5;;:16;;;;;;;;;;;;;;;;;;155:83;:::o",
   "source": "pragma solidity ^0.4.19;\n\n/// Owned contract as defined in Solidity documentation\ncontract owned\n{\n    function owned() public { owner = msg.sender; }\n    function delegateOwnership(address newOwner) public onlyOwner { owner = newOwner; } \n    function getOwnerAddress() view public returns(address) { return owner; }\n    address owner;\n    \n        modifier onlyOwner {\n        require(msg.sender == owner);\n        _;\n    }\n}\n\n/// Mortal contract as defined in Solidity documentation\ncontract mortal is owned {\n    function kill() internal onlyOwner {\n        selfdestruct(owner);\n    }\n}\n/// Storage contract\ncontract EtherTrackDataStore is owned, mortal {\n    \n    /// Hash table that pair address with public name\n    mapping(address => uint64) private nameByNode;\n    mapping(address => bool) private registeredByNode;\n    mapping(uint64 => address) private nodeByName;    \n    \n    function EtherTrackDataStore(address target) public { \n\tif(target != address(0))\n\t{\n\t\tdelegateOwnership(target);\n\t}\n    }\n    \n    function getNamebyNode (address node) external view returns (uint64) {\n        return nameByNode[node];\n    }\n    \n    function getNodebyName (uint64 name) external view returns (address) {\n        return nodeByName[name];\n    }\n    \n    function setNamebyNode (address node, uint64 name) external onlyOwner returns (uint64) {\n        require(!registeredByNode[node]);\n        nameByNode[node] = name;\n        nodeByName[name] = node;\n        registeredByNode[node] = true;\n\treturn name;\n    }\n}\n",
-  "sourcePath": "/home/sunpaz/Truffle/contracts/EtherTrackDataStore.sol",
+  "sourcePath": "/home/sunpaz/EtherTrack/Truffle-project/contracts/EtherTrackDataStore.sol",
   "ast": {
-    "absolutePath": "/home/sunpaz/Truffle/contracts/EtherTrackDataStore.sol",
+    "absolutePath": "/home/sunpaz/EtherTrack/Truffle-project/contracts/EtherTrackDataStore.sol",
     "exportedSymbols": {
       "EtherTrackDataStore": [
         154
@@ -1839,7 +1839,7 @@
     "src": "0:1516:0"
   },
   "legacyAST": {
-    "absolutePath": "/home/sunpaz/Truffle/contracts/EtherTrackDataStore.sol",
+    "absolutePath": "/home/sunpaz/EtherTrack/Truffle-project/contracts/EtherTrackDataStore.sol",
     "exportedSymbols": {
       "EtherTrackDataStore": [
         154
@@ -3648,10 +3648,10 @@
     "4447": {
       "events": {},
       "links": {},
-      "address": "0xf25186b5081ff5ce73482ad761db0eb0d25abfbf",
-      "transactionHash": "0x5e82866036ddd6c9e658c7a31efaae3919e8f919dbe7a1086413ff349d313fb5"
+      "address": "0x2a504b5e7ec284aca5b6f49716611237239f0b97",
+      "transactionHash": "0x87490ce994777dcbf089f914a9ca5c18d382641aa6d9c2a41d41b7e2ac243a76"
     }
   },
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-03-23T16:30:56.388Z"
+  "updatedAt": "2018-03-29T17:49:54.891Z"
 }

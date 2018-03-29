@@ -107,7 +107,7 @@ class Warehouse {
 	console.log("Creating unit : " + unit + " at " + contractObject.address);
 	console.log(contractObject.provider.eth.accounts[0]);
 
-        myWHContract.at(contractObject.address, {from: contractObject.provider.eth.accounts[0]}).then(function (instance) {
+        myWHContract.at(contractObject.address, {from: contractObject.provider.eth.accounts[0], gas: 21000 }).then(function (instance) {
             return instance.createUnit(unit); //Calling contract method
         });
     }
@@ -133,7 +133,7 @@ class Warehouse {
         myWHContract.setProvider(contractObject.provider.currentProvider);
 
 
-        myWHContract.new(name, ethNSAddress, { from: contractObject.provider.eth.accounts[0], gas: 5000000 }).then(function (instance) {
+        myWHContract.new(name, ethNSAddress, { from: contractObject.provider.eth.accounts[0], gas: 21000 }).then(function (instance) {
             contractInstance = instance;
             return instance.Name.call().then(function (result) { contractName = result; contractObject.address = contractInstance.address; console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address);});
         })

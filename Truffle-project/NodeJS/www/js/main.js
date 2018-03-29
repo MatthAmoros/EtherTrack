@@ -39,58 +39,35 @@ $(document).ready(function () {
             bindedContract.push(ns);
             console.log("Successfully added.");
 
+	});
 });
 
-    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-    if (typeof web3 !== "undefined") {
-        // Use Mist/MetaMask's provider
-        let context = new Web3(web3.currentProvider);
-        //Start DApp
-        startDapp(context);
-    } else {
-        console.log("MetaMask/Mist not detected, trying to contact local node...");
+window.addEventListener('load', function () { 
+if (typeof web3 !== 'undefined') {
+	console.log("MetaMask/Mist detected !");
+    // Use Mist/MetaMask's provider
+    provider = new Web3(web3.currentProvider);
+	startDapp(provider);
+  }
+else if(typeof window.web3 !== 'undefined') {
+       console.log("MetaMask/Mist detected !");
+    // Use Mist/MetaMask's provider
+    provider = new Web3(window.web3.currentProvider);
+	startDapp(provider);
+}
+ else {
+   console.log("MetaMask/Mist not detected, trying to contact local node...");
         let Web3 = require("web3");
 
 	//Local node
         provider = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
 
         if (typeof provider !== "undefined") {
-            console.log("Connected to : " + provider.currentProvider.host);
+            console.log("Connecting to : " + provider.currentProvider.host);
             startDapp(provider);
         }
     }
 });
-
-function startDapp(provider) {
-
-    if (!provider.isConnected()) {
-        console.log("Not connected")
-	//Metamask needed 
-	$('#main').replaceWith('<div><img src="./img/metamask-required.png" href="https://metamask.io/"/></div>');
-        return;
-    }
-        provider.sendAsync = Web3.providers.HttpProvider.prototype.send
-	provider.eth.defaultAccount = provider.eth.accounts[0]
-
-    //Get user preferences
-    if (!sessionStorage.accountInformationSent) {
-        $.ajax({
-            url: '/accountConnected',
-            type: "POST",
-            data: JSON.stringify({ address: provider.eth.coinbase }),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (result) {
-                console.log("Loading user preferences ...");
-		console.log(result);
-                result.warehouse.forEach(function (wh) { let myWarehouse = new Warehouse(wh.address, null, null, provider); bindedContract.push(myWarehouse);});
-                result.ns.forEach(function (ns) { let myNameService = new NameService(ns.address, provider, null); bindedContract.push(myNameService);});
-            }
-        })
-
-        sessionStorage.accountInformationSent = 1;
-    }
-}
 
 //Log events to grid
 function logEvents(contract, eventType, description) {
