@@ -38,7 +38,14 @@ $(document).ready(function () {
             let ns = new NameService(NScontractAddress, provider, null);
             bindedContract.push(ns);
             console.log("Successfully added.");
+	});
 
+
+   $("#btnCreatNS").click(function() {
+	    let NScontractAddress = $("#nsAddAddress").val();
+            let ns = new NameService("", provider, null);
+            bindedContract.push(ns);
+            console.log("Successfully added.");
 	});
 });
 
@@ -106,6 +113,7 @@ function displayWarehouse(name, address) {
 function displayNameService(name, address) {
     $('#NSList').append("<li class=\"list-group-item\">" + name + " at : " + address +
         "<input type=\"button\" value=\"Get GLN address\" id=\"nsBtnLook-" + address.substring(0, 10) + "\"/>" +
+	"<input type=\"button\" value=\"RegisterGLN\" id=\"nsBtnReg-" + address.substring(0, 10) + "\"/>" +
         "<input placeholder=\"GLN\" id=\"glnNode-" + address.substring(0, 10) + "\"/>" +
         "</li>");
 
@@ -114,6 +122,13 @@ function displayNameService(name, address) {
 	let contract = bindedContract.find(x => x.address == address);
 	contract.lookupCallBack = function(result) {displayNodeName(name, result);};
 	contract.lookupGLN(name);        
+    });
+
+    $("#nsBtnReg-" + address.substring(0, 10)).click(function () {
+        let name = $("#glnNode-" + address.substring(0, 10)).val();
+	let contract = bindedContract.find(x => x.address == address);
+	console.log(contract);
+	contract.registerGLN(name);        
     });
 }
 

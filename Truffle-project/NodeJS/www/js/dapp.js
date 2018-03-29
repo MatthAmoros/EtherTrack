@@ -1,4 +1,4 @@
-var currentAccount;
+var currentAccount = "";
 function accountUpdate(account)
 {
 	if(currentAccount != account)

@@ -16,7 +16,7 @@ contract owned
 
 contract EtherTrackNS is owned {
     /// Fired on entries update
-    event  updateEntries (address owner, uint64 GS1_GLN);
+    event updateEntries (address owner, uint64 GS1_GLN);
 
     /// EtherTrackNS parent to forward queries
     address _parent;
@@ -31,13 +31,12 @@ contract EtherTrackNS is owned {
         _dataStore = dataStore;
     }
 
-
     function createDataStore() public returns (address) {
 	require(_dataStore == address(0));
         _dataStore = new EtherTrackDataStore();
 	return _dataStore;
     }
-    
+
     function getDataStoreAddress() public view returns(address) { return  _dataStore;}
     function setDataStoreAddress(address dataStore) public onlyOwner {  _dataStore = dataStore;}
 
