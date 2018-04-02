@@ -1,6 +1,5 @@
 pragma solidity ^0.4.19;
 
-
 /// Owned contract as defined in Solidity documentation
 contract owned
 {
@@ -37,42 +36,39 @@ contract EtherTrackNS is owned {
 	return _dataStore;
     }
 
+    // Datastore
     function getDataStoreAddress() public view returns(address) { return  _dataStore;}
     function setDataStoreAddress(address dataStore) public onlyOwner {  _dataStore = dataStore;}
 
+    // NS Parent
+    function getParentAddress() public view returns(address) { return  _parent;}
+    function setParentAddress(address parent) public onlyOwner {  _parent = parent;}
+
     /// updateRegisters
     /// Upadtes registry with the provided node/name pair and a the secret for futur hashing
-    function updateRegisters(address node, uint64 GS1_GLN) internal returns(bool registered)
+    function updateRegisters(address node, uint64 GS1_GLN) internal
     {
-        if (!this.exists(node))
-        {
-            /// Name not already used
-            if (EtherTrackDataStore(_dataStore).getNodebyName(GS1_GLN) == address(0))
-            {
-        	//Update data store
-        	EtherTrackDataStore(_dataStore).setNamebyNode(node, GS1_GLN);
+	require(_dataStore != address(0));
+        require(!this.exists(node));
+	require((EtherTrackDataStore(_dataStore).getNodebyName(GS1_GLN) == address(0)));
 
-                if(_parent != address(0))
-                    EtherTrackNS(_parent).registerName(node, GS1_GLN); //Notify parent
-                else
-                    updateEntries(node, GS1_GLN);
-            }
-            else
-            {
-                registered = false;
-            }
+	//Update data store
+	EtherTrackDataStore(_dataStore).setNamebyNode(node, GS1_GLN);
 
-            return registered;
-        }
+	if(_parent != address(0))
+	    EtherTrackNS(_parent).registerName(node, GS1_GLN); //Notify parent
+
+	updateEntries(node, GS1_GLN);        
     }
 
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
     function getNameByNodeAddress(address node) external view returns(uint64 _name)
     {
+	require(_dataStore != address(0));
         _name = EtherTrackDataStore(_dataStore).getNamebyNode(node);
         
-        if(_parent != address(0) && _name == address(0))
+        if(_parent != address(0) && _name == 0)
             _name = EtherTrackNS(_parent).getNameByNodeAddress(node);
         
         return _name;
@@ -94,7 +90,10 @@ contract EtherTrackNS is owned {
     /// Returns name corresponding to provided node address
     function exists(address node) external view returns(bool exists)
     {
+	require(_dataStore != address(0));
+
         bool isRegistered = (EtherTrackDataStore(_dataStore).getNamebyNode(node) != 0);
+
         if(!isRegistered && _parent != address(0))
         {
             isRegistered = EtherTrackNS(_parent).exists(node);
@@ -105,12 +104,9 @@ contract EtherTrackNS is owned {
     
     /// registerName
     /// Registers name and asociate it to caller address
-    function registerName(address node, uint64 GS1_GLN) external payable returns(bool registered)
+    function registerName(address node, uint64 GS1_GLN) external payable
     {
-        if(node == address(0))
-            return updateRegisters(msg.sender, GS1_GLN);
-        else
-            return updateRegisters(node, GS1_GLN);
+            updateRegisters(node, GS1_GLN);
     }
     
     function kill() internal onlyOwner {
@@ -120,14 +116,13 @@ contract EtherTrackNS is owned {
     }
 }
 
-
-
 /// Mortal contract as defined in Solidity documentation
 contract mortal is owned {
     function kill() internal onlyOwner {
         selfdestruct(owner);
     }
 }
+
 /// Storage contract
 contract EtherTrackDataStore is owned, mortal {
     
@@ -155,5 +150,3 @@ contract EtherTrackDataStore is owned, mortal {
         registeredByNode[node] = true;
     }
 }
-
-

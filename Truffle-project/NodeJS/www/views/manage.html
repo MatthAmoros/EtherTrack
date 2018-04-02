@@ -1,0 +1,70 @@
+	<div>
+	<input type="button" value="Validate Hash" id="btnValHash" onclick="generateHash()"/>
+	<input placeholder="string to hash" id="strToHash"/>
+	</div>
+	<div>
+	<input type="button" value="Add existing name service" id="btnAddNS"/>
+	<input placeholder="address" id="nsAddAddress"/>
+	</div>
+	<div>
+	<input type="button" value="Add existing warehouse" id="btnAddWH"/>
+	<input placeholder="address" id="whAddress"/>
+	</div>
+	<div>
+	<input type="button" value="Create warehouse" id="btnCreatWH"/>
+	<input placeholder="EtherTrackNS Address" id="nsAddress"/>
+	<input placeholder="Warehouse name" id="whName"/>
+	</div>
+	<div>
+	<input type="button" value="Create name service" id="btnCreatNS"/>
+	</div>
+
+
+<script>
+$(document).ready(function () {
+$("#btnAddWH").click(function () {
+        let contractAddress = $("#whAddress").val();
+
+        console.log("Adding warehouse ...");
+
+        if (bindedContract.indexOf(contractAddress) == -1) {
+            let wh = new Warehouse(contractAddress, null, null, provider, null)
+            bindedContract.push(wh);
+            console.log("Successfully added.");
+        }
+        else {
+            console.log("Already exsits.");
+        }
+    });
+    $("#btnCreatWH").click(function () {
+        let NScontractAddress = $("#nsAddress").val();
+        let whName = $("#whName").val();
+
+        console.log("Creating warehouse ...");
+
+        if (bindedContract.indexOf(whName) == -1) {
+            let wh = new Warehouse(null, NScontractAddress, whName, provider, null)
+            bindedContract.push(wh);
+            console.log("Successfully added.");
+        }
+        else {
+            console.log("Already exsits.");
+        }
+    });
+
+   $("#btnAddNS").click(function() {
+	    let NScontractAddress = $("#nsAddAddress").val();
+            let ns = new NameService(NScontractAddress, provider, null);
+            bindedContract.push(ns);
+            console.log("Successfully added.");
+	});
+
+
+   $("#btnCreatNS").click(function() {
+	    let NScontractAddress = $("#nsAddAddress").val();
+            let ns = new NameService("", provider, null);
+            bindedContract.push(ns);
+            console.log("Successfully added.");
+	});
+});
+</script>

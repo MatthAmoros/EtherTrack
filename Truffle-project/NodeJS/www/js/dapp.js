@@ -7,6 +7,18 @@ function accountUpdate(account)
 	if(currentAccount != account)
 	{
 		currentAccount = account;
+
+
+		if(typeof account == 'undefined')
+		{
+			toast("Please unlock account");
+			$("#main").load("./views/locked.html")
+			$("#navbarNavAltMarkup").find("#cntAsAccount").text("User : Locked");
+			return;
+		}
+		else
+			$("#main").load("./views/main.html")
+
 		provider.eth.defaultAccount = account;
 		$("#navbarNavAltMarkup").find("#cntAsAccount").text("User : " + account.substring(0, 10) + "[...]");
 		reloadPreference();
@@ -15,10 +27,9 @@ function accountUpdate(account)
 
 function startDapp(provider) {
 	if (!provider.isConnected()) {
-		console.log("Not connected")
+		toast("Not connected")
 		//Metamask needed 
 		$('#main').replaceWith('<div><a href="https://metamask.io/"><img src="./img/metamask-required.png" /></a></div>');
-
 		return;
 	}
 
@@ -29,23 +40,14 @@ function startDapp(provider) {
 		if (err) return
 		accountUpdate(accounts[0]);
 	})
-	}, 3000);
-	accountUpdate(provider.eth.accounts[0]);
+	}, 3000);	
 
         provider.sendAsync = Web3.providers.HttpProvider.prototype.send;
-	provider.eth.defaultAccount = provider.eth.accounts[0];
-
-    //Get user preferences
-    if (!sessionStorage.accountInformationSent) {
-
-	reloadPreference();
-        sessionStorage.accountInformationSent = 1;
-    }
 }
 
 function reloadPreference()
 {
-	console.log("Reloading preferences...");
+	toast("Reloading preferences...");
         $.ajax({
             url: '/accountConnected',
             type: "POST",
@@ -57,11 +59,26 @@ function reloadPreference()
 		$('#WHList').empty();
 		$('#NSList').empty();
 
-                console.log("Loading user preferences ...");
-                result.warehouse.forEach(function (wh) { let myWarehouse = new Warehouse(wh.address, null, null, provider); bindedContract.push(myWarehouse);});
-                result.ns.forEach(function (ns) { let myNameService = new NameService(ns.address, provider, null); bindedContract.push(myNameService);});
+                result.warehouse.forEach(function (wh) {
+			if (bindedContract.indexOf(wh) == -1) {
+				let myWarehouse = new Warehouse(wh.address, null, null, provider); 
+				bindedContract.push(myWarehouse);
+			}
+		});
+                result.ns.forEach(function (ns) { 
+			let myNameService = new NameService(ns.address, provider, null); 
+			bindedContract.push(myNameService);
+		});
             }
         })
+}
+
+
+function toast(message) {
+    var x = document.getElementById("snackbar");
+    x.className = "show";
+    x.innerHTML = message;
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 }
 
 function generateHash() {
@@ -69,6 +86,4 @@ function generateHash() {
 	let hashed = keccak256(codeToHash);
 	knownHash.push({hash: hashed, plain:codeToHash});
 	console.log(knownHash);
-	$('#eventsTable > tbody').innerHTML = $('#main').innerHTML.replace(hashed, codeToHash);
-
 }

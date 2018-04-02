@@ -1,44 +1,39 @@
 var etherTrackNS_ABI;
 var provider;
 
-
-
 $(document).ready(function () {
     $("#btnAddWH").click(function () {
         let contractAddress = $("#whAddress").val();
 
-        console.log("Adding warehouse ...");
-
         if (bindedContract.indexOf(contractAddress) == -1) {
             let wh = new Warehouse(contractAddress, null, null, provider, null)
             bindedContract.push(wh);
-            console.log("Successfully added.");
+            toast("Looking for warehouse at " + contractAddress + "...");
         }
         else {
-            console.log("Already exsits.");
+            toast("Already exsits.");
         }
     });
     $("#btnCreatWH").click(function () {
         let NScontractAddress = $("#nsAddress").val();
         let whName = $("#whName").val();
 
-        console.log("Creating warehouse ...");
-
         if (bindedContract.indexOf(whName) == -1) {
             let wh = new Warehouse(null, NScontractAddress, whName, provider, null)
             bindedContract.push(wh);
-            console.log("Successfully added.");
+            toast("Warehouse creation request sent, please wait for network response...");
         }
         else {
-            console.log("Already exsits.");
+            toast("Already exsits.");
         }
     });
 
    $("#btnAddNS").click(function() {
 	    let NScontractAddress = $("#nsAddAddress").val();
             let ns = new NameService(NScontractAddress, provider, null);
+		ns.onCreate = toast;
             bindedContract.push(ns);
-            console.log("Successfully added.");
+            toast("Looking for name service at " + NScontractAddress + " ...");
 	});
 
 
@@ -46,11 +41,16 @@ $(document).ready(function () {
 	    let NScontractAddress = $("#nsAddAddress").val();
             let ns = new NameService("", provider, null);
             bindedContract.push(ns);
-            console.log("Successfully added.");
+            toast("Name service creation request sent, please wait for network response...");
 	});
+
+//Loading additional views
+	$("#header").load("./views/header.html");
+//Detect metamask
+	detectProvider();
 });
 
-window.addEventListener('load', function () { 
+function detectProvider() {
 if (typeof web3 !== 'undefined') {
 	console.log("MetaMask/Mist detected !");
     // Use Mist/MetaMask's provider
@@ -75,7 +75,7 @@ else if(typeof window.web3 !== 'undefined') {
             startDapp(provider);
         }
     }
-});
+}
 
 //Log events to grid
 function logEvents(contract, eventType, description) {
@@ -116,6 +116,9 @@ function displayNameService(name, address) {
         "<input type=\"button\" value=\"Get GLN address\" id=\"nsBtnLook-" + address.substring(0, 10) + "\"/>" +
 	"<input type=\"button\" value=\"RegisterGLN\" id=\"nsBtnReg-" + address.substring(0, 10) + "\"/>" +
         "<input placeholder=\"GLN\" id=\"glnNode-" + address.substring(0, 10) + "\"/>" +
+	"<input type=\"button\" value=\"Get Datastore Address\" id=\"nsBtnGetDS-" + address.substring(0, 10) + "\"/>" +
+	"<input type=\"button\" value=\"Set Datastore Address\" id=\"nsBtnSetDS-" + address.substring(0, 10) + "\"/>" +
+	"<input placeholder=\"Datastore Address\" id=\"dsAddre-" + address.substring(0, 10) + "\"/>" +
         "</li>");
 
     $("#nsBtnLook-" + address.substring(0, 10)).click(function () {
@@ -128,13 +131,29 @@ function displayNameService(name, address) {
     $("#nsBtnReg-" + address.substring(0, 10)).click(function () {
         let name = $("#glnNode-" + address.substring(0, 10)).val();
 	let contract = bindedContract.find(x => x.address == address);
-	console.log(contract);
+
 	contract.registerGLN(name);        
     });
+
+    $("#nsBtnGetDS-" + address.substring(0, 10)).click(function () {
+	let contract = bindedContract.find(x => x.address == address);
+
+	contract.getDatastoreCallback = displayDataStoreAddres;
+	contract.getDatastoreAddress();        
+    });
+
+    $("#nsBtnSetDS-" + address.substring(0, 10)).click(function () {
+	let contract = bindedContract.find(x => x.address == address);
+	let dsAddress = $("#dsAddre-" + address.substring(0, 10)).val();
+
+	contract.setDatastoreAddress(dsAddress);        
+    });
+}
+
+function displayDataStoreAddres(NSaddress, DSaddress) {
+	$("#whDestAddr-" + NSaddress.substring(0, 10)).val(DSaddress);
 }
 
 function displayNodeName(name, address) {
     $('#nodeList').append("<li class=\"list-group-item\">" + name + " at : " + address + "</li>");
 }
-
-

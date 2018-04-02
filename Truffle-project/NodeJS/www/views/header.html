@@ -4,10 +4,10 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" href="#">--</a>
-      <a class="nav-item nav-link" href="#">--</a>
+    <div class="navbar-nav" data-role="navbar">
+      <a class="nav-item nav-link active" href="#" onclick="$('#main').load('./views/main.html'); reloadPreference();">Home <span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link" href="#" onclick="$('#main').load('./views/manage.html');">Manage</a>
+      <a class="nav-item nav-link" href="#" onclick="$('#main').load('./views/about.html');">About</a>
       <a class="nav-item nav-link" id="cntAsAccount"></a>
     </div>
   </div>

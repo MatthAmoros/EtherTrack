@@ -42,7 +42,9 @@ class NameService {
         //Setting contract provider (Metmask / local node)
         myNSContract.setProvider(contractObject.provider.currentProvider);
 
-        myNSContract.new(null, null, { from: contractObject.provider.eth.accounts[0], gas: 500000 }).then(function (instance) {
+	try {
+
+        myNSContract.new(null, null, { from: contractObject.provider.eth.accounts[0]}).then(function (instance) {
             contractInstance = instance;
 		contractObject.address = instance.address;
             return instance.createDataStore();
@@ -50,7 +52,13 @@ class NameService {
             .then(function (instance, response) {
 		console.log(instance);
                 contractObject.startEventsListner();
+		contractObject.onCreate(instance.address);
             });    
+}
+catch(err)
+{
+	alert(err);
+}
     }
 
 
@@ -67,7 +75,7 @@ class NameService {
 
         contractTarget.then(function (instance) {
             //Initiate watch for 'updateEntries' events
-            instance.updateEntries().watch((err, response) => {
+            instance.updateEntries().watch({ fromBlock: 0, toBlock: 'latest' }, (err, response) => {
                 console.log(response.args.GS1_GLN + " owned by " + response.args.owner);
                 logEvents("EtherTrackNS", "updateEntries", response.args.GS1_GLN + " owned by " + response.args.owner);
                 displayNodeName(response.args.GS1_GLN, response.args.owner);
@@ -109,6 +117,38 @@ class NameService {
        return glnNodeAddress;   
     }
 
+    getDatastoreAddress() {
+        var contract = this;
+        //Declare contract according to parsed ABI
+        let myNSContract = TruffleContract(this.abi);
+        //Setting contract provider (Metmask / local node)
+        myNSContract.setProvider(this.provider.currentProvider);
+
+        myNSContract.at(this.address).then(function (instance) {
+            console.log("Querying " + contract.address + " ...");
+            return instance.getDataStoreAddress();
+        }).then(function (result) {
+            console.log("getDSAddr " + contract.address + " : " + result);
+            if(contract.getDatastoreCallback !== undefined)
+		contract.getDatastoreCallback(contract.address, result);
+        });     
+    }
+
+    setDatastoreAddress(dsAddress) {
+        var contract = this;
+        //Declare contract according to parsed ABI
+        let myNSContract = TruffleContract(this.abi);
+        //Setting contract provider (Metmask / local node)
+        myNSContract.setProvider(this.provider.currentProvider);
+
+        myNSContract.at(this.address).then(function (instance) {
+            console.log("Querying " + contract.address + " ...");
+            return instance.setDataStoreAddress(dsAddress);
+        }).then(function (result) {
+            console.log("setDSAddr " + contract.address + " : " + result);
+        });     
+    }
+
   registerGLN(gln) {
         var glnNodeAddress;
 
@@ -122,7 +162,8 @@ class NameService {
             console.log("Querying " + contract.address + " for " + gln + " ...");
             return instance.registerName(contract.provider.eth.defaultAccount, gln);
         }).then(function (result) {
-            console.log(contract.address + " : " + result);
+            console.log(contract.address + " : ");
+	    console.log(result);
         });     
     }
 

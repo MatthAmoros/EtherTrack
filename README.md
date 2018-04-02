@@ -13,7 +13,7 @@ EtherTrack use various types of smart contract to :
  1. Register companies
  2. Modify traceability unit state
  3. Record traceability unit movements
- 4. Ensure traceability unit / owner identity  
+ 4. Ensure traceability unit / owner identity
  
 ## Why would I want to use a traceability sytem based on Ethereum Blockchain ?
 The nature of the blockchain system address a lot of issues that you must face when you work with traceability, for example :
@@ -27,7 +27,33 @@ Current version features :
 * A basic GUI designed with NodeJS to connect to a local node. It can deploy contracts and do basic contracts calls.
 * Truffle deploy scripts and refactored contracts.
 
+Name service contract live on Rikerby Network at : 0x76c0c189c64b4709d8b1662762af55264454120f
+
 ## Installing
+
+Clone repository :
+```
+git clone https://github.com/SunPaz/EtherTrack
+```
+Start Node.js web server :
+```
+node Truffle-project/NodeJS/node-server.js 
+```
+Compile contracts using Truffle :
+```
+truffle compile
+```
+(optional)
+
+Launch truffle test network :
+```
+truffle develop
+```
+Migrate contracts to network (in truffle develop console) :
+```
+migrate --reset
+```
+Launch you browser on http://localhost:8081/ and you are done !
 	
 ## Built with :
 * [Truffle](https://github.com/trufflesuite/truffle) : Ethereum development framework 
