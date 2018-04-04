@@ -65,15 +65,22 @@ else if(typeof window.web3 !== 'undefined') {
 }
  else {
    console.log("MetaMask/Mist not detected, trying to contact local node...");
-        let Web3 = require("web3");
+	try {
+		let Web3 = require("web3");
 
-	//Local node
-        provider = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
+		//Local node
+		provider = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
 
-        if (typeof provider !== "undefined") {
-            console.log("Connecting to : " + provider.currentProvider.host);
-            startDapp(provider);
-        }
+		if (typeof provider !== "undefined") {
+		    console.log("Connecting to : " + provider.currentProvider.host);
+		    startDapp(provider);
+		}
+	}
+	catch(err) {
+		toast("Not connected")
+		//Metamask needed 
+		$('#main').replaceWith('<div><a href="https://metamask.io/"><img src="./img/metamask-required.png" /></a></div>');
+	}
     }
 }
 
