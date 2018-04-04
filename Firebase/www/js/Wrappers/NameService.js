@@ -5,6 +5,7 @@ class NameService {
         this.provider = provider;
         this.name = name;
         this.saved = fromDatabase;
+        
         var ns = this;
 
         $.getJSON(myABI_PROVIDER_EtherTrackNS, function (data) {
@@ -18,8 +19,11 @@ class NameService {
                 ns.addNameService();
             }
             else {
-                console.log("Starting NS ...");
-                ns.startEventsListner();
+				if(contractListners.indexOf(ns.address) == -1) {
+					contractListners.push(ns.address);
+					console.log("Starting NS ...");
+					ns.startEventsListner();					
+				}
             }
         });
     }
@@ -168,7 +172,8 @@ class NameService {
 
     saveToFirebase() {
         if (!this.saved) {
-            firebase.database().ref('users/' + currentAccount + '/nameservice').push({
+            firebase.database().ref('users/' + currentAccount + '/nameservice/' + this.address).set({
+                name: "",
                 address: this.address
             });
             this.saved = true;

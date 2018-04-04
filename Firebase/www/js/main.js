@@ -1,4 +1,3 @@
-var etherTrackNS_ABI;
 var provider;
 // Document ready, bind clicks events, load main view and detect web3 provider
 $(document).ready(function () {
@@ -105,7 +104,7 @@ function displayWarehouse(name, address, savePref) {
     $("#whBtnCreate-" + address.substring(0, 10)).click(function () {
         let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
         let contract = bindedContract.find(x => x.address == address);
-        console.log(contract);
+
         contract.createUnit(unitCode);
     });
 
@@ -113,13 +112,9 @@ function displayWarehouse(name, address, savePref) {
         let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
         let whAddressTo = $("#whDestAddr-" + address.substring(0, 10)).val();
         let contract = bindedContract.find(x => x.address == address);
-        console.log(contract);
+
         contract.sendUnit(whAddressTo, unitCode, provider);
     });
-
-    if (savePref) {
-        saveWarehouse(currentAccount, address, name);
-    }
 }
 // Display name service to main view
 function displayNameService(name, address, savePref) {
@@ -162,10 +157,6 @@ function displayNameService(name, address, savePref) {
 
         contract.setDatastoreAddress(dsAddress);
     });
-
-    if (savePref) {
-        saveNameService(currentAccount, address);
-    }
 }
 // Save preference to Firebase
 function savePreference(address) {

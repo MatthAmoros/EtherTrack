@@ -1,5 +1,6 @@
 var currentAccount = "";
 var bindedContract = [];
+var contractListners = [];
 var knownHash = [];
 var preferences;
 
@@ -43,7 +44,7 @@ function startDapp(provider) {
     provider.sendAsync = Web3.providers.HttpProvider.prototype.send;
 }
 // Reload user preferences
-function reloadPreference() {
+function reloadPreference() {	
     toast("Reloading preferences...");
     getUserPreference(currentAccount);
 }

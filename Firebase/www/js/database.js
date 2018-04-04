@@ -8,6 +8,8 @@ var config = {
     messagingSenderId: "789424521077"
 };
 firebase.initializeApp(config);
+var test;
+
 // Save warehouse info to database
 function saveWarehouse(userAccount, whAddress, whName) {
     firebase.database().ref('users/' + userAccount + '/warehouse').push({
@@ -30,25 +32,39 @@ function saveKnownNodes(nodeName, nodeAddress)
 // Retrieve user preferences (WH / NS previously saved)
 function getUserPreference(userAccount) {
     firebase.database().ref('users').child(userAccount)
-        .on('value', function (snapshot) {
+        .once('value', function (snapshot) { //Only executed once
             var user = snapshot;
             if (user != null) {
                 preferences = user;
+				bindedContract = [];
                 user.forEach(function (element) {
-                    if (element.key == "warehouse") {
+                    if (element.key == "warehouse") { //Loading Warehouses
                         element.forEach(function (wh) {
-                            wh = wh.val();
-                            if (bindedContract.indexOf(wh) == -1) {
-                                let myWarehouse = new Warehouse(wh.address, null, null, provider, true);
-                                bindedContract.push(myWarehouse);
-                            }
+                            warehouse = wh.val();
+
+                            if(warehouse.address != undefined) { //It has addres, its a warehouse                           
+								let myWarehouse = new Warehouse(warehouse.address, null, null, provider, true);
+								bindedContract.push(myWarehouse);
+							}					
+							
+							/*
+							if(wh.received == "received") { //Received elements
+								addReceivedUnit(wh.unitHash);
+							}
+							
+							if(wh.key == "sent") { //Sent elements
+								addSentUnit(wh.unitHash);
+							}*/
                         });
                     }
                     else if (element.key == "nameservice") {
                         element.forEach(function (ns) {
                             ns = ns.val();
-                            let myNameService = new NameService(ns.address, provider, null, true);
-                            bindedContract.push(myNameService);
+
+                            if(ns.address != undefined) {                            
+								let myNameService = new NameService(ns.address, provider, null, true);
+								bindedContract.push(myNameService);
+							}
                         });
                     }
                 });

@@ -13,12 +13,17 @@ class Warehouse {
 
             wh.abi = data;
 
-            if (wh.address == null) // No address specified, create new one
+            if (wh.address.length == 0) // No address specified, create new one
             {
+				console.log("Creating WH ...");
                 wh.createWarehouse(wh.nsAddress, wh.name);
             }
             else {
-                wh.startEventsListner();
+				if(contractListners.indexOf(wh.address) == -1) {
+					console.log("Starting WH ...");
+					contractListners.push(wh.address);
+					wh.startEventsListner();
+				}
             }
         });
     }
@@ -28,11 +33,13 @@ class Warehouse {
     //
     startEventsListner() {
         console.log("Parsing done, waiting for events... (Warehouse)");
+        
         //Declare contract according to parsed ABI
         if (this.truffleContract === undefined) {
             let myWHContract = TruffleContract(this.abi);
             this.truffleContract = myWHContract;
         }
+        
         let myWHContract = this.truffleContract;
 
         //Setting contract provider (Metmask / local node)
@@ -40,24 +47,38 @@ class Warehouse {
         var contractInstance;
         var contractName;
         var contractObject = this;
+        
+        //Prevent events rebounce
+        var lastRecvUnit;
+        var lastSentUnit;
 
         myWHContract.at(this.address).then(function (instance) {
             contractInstance = instance;
-            return instance.Name.call().then(function (result) { contractName = result; console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address); displayWarehouse(contractName, contractInstance.address); });
+            return instance.Name.call().then(function (result) { contractName = result; contractObject.name = contractName;console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address); });
         })
             .then(function (instance, response) {
                 //Initiate watch for 'unitReceived' events
                 contractInstance.unitReceived().watch((err, response) => {
-                    console.log(response.args.hashedUnit + " received from " + response.args.from);
-                    logEvents("EtherTrackWarehouse (" + contractName + ")", "unitReceived", response.args.hashedUnit + " from " + (response.args.from == contractInstance.address ? "self" : response.args.from));
+					if(lastRecvUnit != response.args.hashedUnit) {
+						lastRecvUnit = response.args.hashedUnit;
+						console.log(response.args.hashedUnit + " received from " + response.args.from);
+						toast("EtherTrackWarehouse (" + contractName + "), unitReceived " + response.args.hashedUnit + " from " + response.args.from);
+						contractObject.addIncommingUnit(response.args.hashedUnit, response.args.from, response.transactionHash);
+					}
                 });
                 //Initiate watch for 'unitSent' events
                 contractInstance.unitSent().watch((err, response) => {
-                    console.log(response.args.hashedUnit + " sent to " + response.args.to);
-                    logEvents("EtherTrackWarehouse (" + contractName + ")", "unitSent", response.args.hashedUnit + " to " + response.args.to);
-                });
-                contractObject.saveToFirebase();
-            });
+					if(lastSentUnit != response.args.hashedUnit) {
+						lastSentUnit = response.args.hashedUnit;
+						console.log(response.args.hashedUnit + " sent to " + response.args.to);
+						toast("EtherTrackWarehouse (" + contractName + "), unitSent " + response.args.hashedUnit + " to " + response.args.to);
+						contractObject.addSentUnit(response.args.hashedUnit, response.args.to, response.transactionHash);
+					}
+                });                
+            }).then(function () { 
+					displayWarehouse(contractName, contractInstance.address); 
+					contractObject.saveToFirebase();
+				});
     }
 
     //
@@ -117,23 +138,45 @@ class Warehouse {
 
         //Setting contract provider (Metmask / local node)
         myWHContract.setProvider(contractObject.provider.currentProvider);
-
-
+		
         myWHContract.new(name, ethNSAddress, { from: currentAccount, gas: 900000 }).then(function (instance) {
             contractInstance = instance;
-            return instance.Name.call().then(function (result) { contractName = result; contractObject.address = contractInstance.address; console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address); });
+            return instance.Name.call().then(
+            function (result) { 
+				contractName = result; 
+				contractObject.address = contractInstance.address; 
+				console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address); ;
+				contractObject.startEventsListner();
+				})
         })
-            .then(function (instance, response) {
-                contractObject.startEventsListner();
-            });
     }
 
     saveToFirebase() {
         if (!this.saved) {
-            firebase.database().ref('users/' + currentAccount + '/warehouse').push({
+            firebase.database().ref('users/' + currentAccount + '/warehouse/'+ this.address).set({
+                name: this.name,
                 address: this.address
             });
             this.saved = true;
         }
     }
+    
+    addIncommingUnit(unitHash, fromAddress, tx) {
+			console.log(tx);
+		     firebase.database().ref('users/' + currentAccount + '/warehouse/'+ this.address +'/received/').push({
+                unitHash: unitHash,
+                unitClear: "",
+                from: fromAddress,
+                tx: tx
+            });
+	}
+	
+	addSentUnit(unitHash, toAddress, tx) {
+		     firebase.database().ref('users/' + currentAccount + '/warehouse/sent/' + this.address + '/sent/').push({
+                unitHash: unitHash,
+                unitClear: "",
+                to: toAddress,
+                tx: tx
+            });
+	}
 }
