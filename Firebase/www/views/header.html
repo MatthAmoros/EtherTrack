@@ -1,0 +1,14 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">EtherTrack</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav" data-role="navbar">
+      <a class="nav-item nav-link active" href="#" onclick="$('#main').load('./views/main.html'); reloadPreference();">Home <span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link" href="#" onclick="$('#main').load('./views/manage.html');">Manage</a>
+      <a class="nav-item nav-link" href="#" onclick="$('#main').load('./views/about.html');">About</a>
+      <a class="nav-item nav-link" id="cntAsAccount"></a>
+    </div>
+  </div>
+</nav>
