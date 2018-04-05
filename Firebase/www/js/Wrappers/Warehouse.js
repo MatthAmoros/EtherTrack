@@ -5,6 +5,7 @@ class Warehouse {
         this.nsAddress = nsAddress;
         this.name = name;
         this.saved = fromDatabase;
+		this.receivedUnits = [];
 
         var wh = this;
 
@@ -162,13 +163,57 @@ class Warehouse {
     }
     
     addIncommingUnit(unitHash, fromAddress, tx) {
-			console.log(tx);
-		     firebase.database().ref('users/' + currentAccount + '/warehouse/'+ this.address +'/received/').push({
-                unitHash: unitHash,
-                unitClear: "",
-                from: fromAddress,
-                tx: tx
-            });
+		console.log(tx);
+		firebase.database().ref('users/' + currentAccount + '/warehouse/'+ this.address +'/received/').push({
+			unitHash: unitHash,
+			unitClear: "",
+			from: fromAddress,
+			tx: tx
+		});
+	}
+	
+	bindIncommingUnit(unitHash, unitPlain, fromAddress, tx, key) {
+		console.log("=> " + unitHash, +" : " + fromAddress + " | " + tx);
+
+		this.receivedUnits.push({hash: unitHash, clear: unitPlain, from: fromAddress, tx: tx, key: key});
+	}
+	
+	displayIncommingUnits() {
+		var myWarehouse = this;
+		this.receivedUnits.forEach(function(unit) {
+			var unitId;			
+			if(typeof unit.clear == 'undefined' || unit.clear.length === 0) {				
+				var hash = knownHash.find(x => x.hash == unit.hash);
+				if(typeof hash != 'undefined') {
+					unitId = hash.plain; 
+					
+					//Updating firebase
+					firebase.database().ref()
+					.child('users/' + currentAccount + '/warehouse/'+ myWarehouse.address +'/received/' + unit.key)
+					.update({
+						unitHash: unit.hash,
+						unitClear: hash.plain,
+						from: unit.from,
+						tx: unit.tx
+					});
+					
+				    $('#UnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">  Voucher</a></li>");
+				}
+				else {
+					unitId = unit.hash;
+					$('#hashedUnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">  Voucher</a></li>");
+				}
+			}
+			else {
+				unitId = unit.clear;
+				$('#UnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">  Voucher</a></li>");
+			}			
+		});
+	}	
+	
+	displayOutgoingUnit(unitHash, toAddress, tx, key) {
+		this.sentUnits = [];
+		this.sentUnits.push({hash: unitHash, to: toAddress, tx: tx, key: key});
 	}
 	
 	addSentUnit(unitHash, toAddress, tx) {

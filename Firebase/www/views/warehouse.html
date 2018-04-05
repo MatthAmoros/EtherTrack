@@ -4,7 +4,21 @@
     <ul class="list-group" id="WHList"></ul>
 <div>
 <div class="well">
+<b>Last entries :</b>
+<ul class="list-group" id="UnitList"></ul>
+</div>
+
+<div class="well">
 <b>Waiting for identification :</b>
 <ul class="list-group" id="hashedUnitList"></ul>
 </div>
 
+<script>
+	bindedContract.forEach(function(wh) { if(wh instanceof Warehouse) { displayWarehouse(wh.name, wh.address, false); }});
+	displayUnits();
+</script>
+
+<div>
+    <input type="button" value="Validate Hash" id="btnValHash" onclick="generateHash(); $('#main').load('./views/warehouse.html');" />
+    <input placeholder="string to hash" id="strToHash" />
+</div>

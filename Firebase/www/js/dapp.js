@@ -58,7 +58,14 @@ function toast(message) {
 // Generate keccak256 hash of passed string
 function generateHash() {
     let codeToHash = $("#strToHash").val();
+    let hashed = keccak_256(codeToHash);
+    knownHash.push({ hash: '0x'+hashed, plain: codeToHash });
+    console.log(knownHash);
+}
+/*
+function generateHash(clear) {
+    let codeToHash = clear;
     let hashed = keccak256(codeToHash);
     knownHash.push({ hash: hashed, plain: codeToHash });
     console.log(knownHash);
-}
+}*/

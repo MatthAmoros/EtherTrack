@@ -22,13 +22,6 @@ function saveNameService(userAccount, nsAddress) {
         address: nsAddress
     });
 }
-/*
-function saveKnownNodes(nodeName, nodeAddress)
-  firebase.database().ref('knownNodes/' + nodeAddress).set({
-	name: nodeName
-  });
-}
-*/
 // Retrieve user preferences (WH / NS previously saved)
 function getUserPreference(userAccount) {
     firebase.database().ref('users').child(userAccount)
@@ -45,16 +38,19 @@ function getUserPreference(userAccount) {
                             if(warehouse.address != undefined) { //It has addres, its a warehouse                           
 								let myWarehouse = new Warehouse(warehouse.address, null, null, provider, true);
 								bindedContract.push(myWarehouse);
-							}					
-							
-							/*
-							if(wh.received == "received") { //Received elements
-								addReceivedUnit(wh.unitHash);
+								//Received units
+								for (var key in warehouse.received) {
+									if (warehouse.received.hasOwnProperty(key)) {
+										myWarehouse.bindIncommingUnit(warehouse.received[key].unitHash, warehouse.received[key].unitClear, warehouse.received[key].from, warehouse.received[key].tx, key);
+									}
+								}
+								//Sent units
+								for (var key in warehouse.sent) {
+									if (warehouse.sent.hasOwnProperty(key)) {
+										myWarehouse.bindIncommingUnit(warehouse.sent[key].unitHash, warehouse.sent[key].unitClear, warehouse.sent[key].from, warehouse.sent[key].tx, key);
+									}
+								}
 							}
-							
-							if(wh.key == "sent") { //Sent elements
-								addSentUnit(wh.unitHash);
-							}*/
                         });
                     }
                     else if (element.key == "nameservice") {

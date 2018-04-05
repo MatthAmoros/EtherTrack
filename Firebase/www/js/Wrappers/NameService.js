@@ -45,7 +45,6 @@ class NameService {
         myNSContract.setProvider(contractObject.provider.currentProvider);
 
         try {
-
             myNSContract.new(null, null, { from: currentAccount }).then(function (instance) {
                 contractInstance = instance;
                 contractObject.address = instance.address;
@@ -54,7 +53,8 @@ class NameService {
                 .then(function (instance, response) {
                     console.log(instance);
                     contractObject.startEventsListner();
-                    contractObject.onCreate(instance.address);
+                    if(typeof contractObject.onCreate != 'undefined')
+						contractObject.onCreate(instance.address);
                 });
         }
         catch (err) {
@@ -78,7 +78,7 @@ class NameService {
             instance.updateEntries().watch({ fromBlock: 0, toBlock: 'latest' }, (err, response) => {
                 console.log(response.args.GS1_GLN + " owned by " + response.args.owner);
                 logEvents("EtherTrackNS", "updateEntries", response.args.GS1_GLN + " owned by " + response.args.owner);
-                saveKnownNodes(response.args.GS1_GLN, response.args.owner);
+                saveKnownNodes(response.args.GS1_GLN, response.args.owner, response.transactionHash);
                 displayNodeName(response.args.GS1_GLN, response.args.owner);
             });
 
@@ -104,6 +104,7 @@ class NameService {
             console.log(contract.address + " : " + result);
             if (contract.lookupCallBack !== undefined)
                 contract.lookupCallBack(result);
+            saveKnownNodes(gln, result, "");
         });
         return glnNodeAddress;
     }
@@ -179,4 +180,12 @@ class NameService {
             this.saved = true;
         }
     }
+    
+	saveKnownNodes(nodeName, nodeAddress, tx) {
+		 firebase.database().ref('users/' + currentAccount + '/nameservice/' + this.address + '/knownNodes/').push({
+			nodeName: nodeName,
+			nodeAddress: nodeAddress,
+			tx: tx
+		});
+	}
 }

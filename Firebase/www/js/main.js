@@ -35,7 +35,6 @@ $(document).ready(function () {
         toast("Looking for name service at " + NScontractAddress + " ...");
     });
 
-
     $("#btnCreatNS").click(function () {
         let NScontractAddress = $("#nsAddAddress").val();
         let ns = new NameService("", provider, null, false);
@@ -93,7 +92,7 @@ function logEvents(contract, eventType, description) {
 }
 // Display warehouse to main view
 function displayWarehouse(name, address, savePref) {
-    $('#WHList').append("<li class=\"list-group-item\">" + name + " at : " + address +
+    $('#WHList').append("<li class=\"list-group-item\">" + name + " at : " + address + 
         "<input type=\"button\" value=\"Send unit\" id=\"whBtnSend-" + address.substring(0, 10) + "\"/>" +
         "<input type=\"button\" value=\"Create unit\" id=\"whBtnCreate-" + address.substring(0, 10) + "\"/>" +
         "<input placeholder=\"Unit code\" id=\"whUniteCode-" + address.substring(0, 10) + "\"/>" +
@@ -170,4 +169,12 @@ function displayDataStoreAddres(NSaddress, DSaddress) {
 // Display node address
 function displayNodeName(name, address) {
     $('#nodeList').append("<li class=\"list-group-item\">" + name + " at : " + address + "</li>");
+}
+// Display received units
+function displayUnits () {
+	bindedContract.forEach(function(wh) {
+		if(wh instanceof Warehouse) {
+			wh.displayIncommingUnits();
+		}		
+	});
 }

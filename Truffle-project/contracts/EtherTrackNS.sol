@@ -31,9 +31,9 @@ contract EtherTrackNS is owned {
     }
 
     function createDataStore() public returns (address) {
-	require(_dataStore == address(0));
+		require(_dataStore == address(0));
         _dataStore = new EtherTrackDataStore();
-	return _dataStore;
+		return _dataStore;
     }
 
     // Datastore
@@ -48,24 +48,24 @@ contract EtherTrackNS is owned {
     /// Upadtes registry with the provided node/name pair and a the secret for futur hashing
     function updateRegisters(address node, uint64 GS1_GLN) internal
     {
-	require(_dataStore != address(0));
+		require(_dataStore != address(0));
         require(!this.exists(node));
-	require((EtherTrackDataStore(_dataStore).getNodebyName(GS1_GLN) == address(0)));
+		require((EtherTrackDataStore(_dataStore).getNodebyName(GS1_GLN) == address(0)));
 
-	//Update data store
-	EtherTrackDataStore(_dataStore).setNamebyNode(node, GS1_GLN);
+		//Update data store
+		EtherTrackDataStore(_dataStore).setNamebyNode(node, GS1_GLN);
 
-	if(_parent != address(0))
-	    EtherTrackNS(_parent).registerName(node, GS1_GLN); //Notify parent
+		if(_parent != address(0))
+			EtherTrackNS(_parent).registerName(node, GS1_GLN); //Notify parent
 
-	updateEntries(node, GS1_GLN);        
+		updateEntries(node, GS1_GLN);        
     }
 
     /// getNameByNodeAddress
     /// Returns name corresponding to provided node address
     function getNameByNodeAddress(address node) external view returns(uint64 _name)
     {
-	require(_dataStore != address(0));
+		require(_dataStore != address(0));
         _name = EtherTrackDataStore(_dataStore).getNamebyNode(node);
         
         if(_parent != address(0) && _name == 0)
@@ -90,7 +90,7 @@ contract EtherTrackNS is owned {
     /// Returns name corresponding to provided node address
     function exists(address node) external view returns(bool exists)
     {
-	require(_dataStore != address(0));
+		require(_dataStore != address(0));
 
         bool isRegistered = (EtherTrackDataStore(_dataStore).getNamebyNode(node) != 0);
 
