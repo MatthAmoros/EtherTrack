@@ -60,6 +60,12 @@ function getUserPreference(userAccount) {
                             if(ns.address != undefined) {                            
 								let myNameService = new NameService(ns.address, provider, null, true);
 								bindedContract.push(myNameService);
+								//Known nodes
+								for (var key in ns.knownNodes) {
+									if (ns.knownNodes.hasOwnProperty(key)) {
+										//ns.bindIncommingUnit(warehouse.received[key].unitHash, warehouse.received[key].unitClear, warehouse.received[key].from, warehouse.received[key].tx, key);
+									}
+								}
 							}
                         });
                     }

@@ -31,7 +31,9 @@ function startDapp(provider) {
         $('#main').replaceWith('<div><a href="https://metamask.io/"><img src="./img/metamask-required.png" /></a></div>');
         return;
     }
-
+	//First load
+	accountUpdate(provider.eth.accounts[0]);
+	
     //Account refresh
     setInterval(() => {
         web3.eth.getAccounts((err, accounts) => {
@@ -45,7 +47,7 @@ function startDapp(provider) {
 }
 // Reload user preferences
 function reloadPreference() {	
-    toast("Reloading preferences...");
+    toast("Reloading preferences for " + currentAccount + "...");
     getUserPreference(currentAccount);
 }
 // Display message (toast style)

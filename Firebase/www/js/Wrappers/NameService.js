@@ -104,7 +104,7 @@ class NameService {
             console.log(contract.address + " : " + result);
             if (contract.lookupCallBack !== undefined)
                 contract.lookupCallBack(result);
-            saveKnownNodes(gln, result, "");
+            contract.saveKnownNodes(gln, result, "");
         });
         return glnNodeAddress;
     }
