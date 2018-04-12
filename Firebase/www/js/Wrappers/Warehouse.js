@@ -197,16 +197,16 @@ class Warehouse {
 						tx: unit.tx
 					});
 					
-				    $('#UnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">  Voucher</a></li>");
+				    $('#UnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">[  Voucher  ]</a></li>");
 				}
 				else {
 					unitId = unit.hash;
-					$('#hashedUnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">  Voucher</a></li>");
+					$('#hashedUnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">[  Voucher  ]</a></li>");
 				}
 			}
 			else {
 				unitId = unit.clear;
-				$('#UnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">  Voucher</a></li>");
+				$('#UnitList').append("<li class=\"list-group-item\">" + unitId + " from : " + unit.from + "  <a href=\"http://rinkeby.etherscan.io/tx/\ " + unit.tx + "\">[  Voucher  ]</a></li>");
 			}			
 		});
 	}	

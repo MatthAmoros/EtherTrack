@@ -33,6 +33,7 @@ function startDapp(provider) {
     }
 	//First load
 	accountUpdate(provider.eth.accounts[0]);
+	signIn();
 	
     //Account refresh
     setInterval(() => {
@@ -45,6 +46,11 @@ function startDapp(provider) {
 
     provider.sendAsync = Web3.providers.HttpProvider.prototype.send;
 }
+
+function signIn() {
+
+}
+
 // Reload user preferences
 function reloadPreference() {	
     toast("Reloading preferences for " + currentAccount + "...");
@@ -64,10 +70,3 @@ function generateHash() {
     knownHash.push({ hash: '0x'+hashed, plain: codeToHash });
     console.log(knownHash);
 }
-/*
-function generateHash(clear) {
-    let codeToHash = clear;
-    let hashed = keccak256(codeToHash);
-    knownHash.push({ hash: hashed, plain: codeToHash });
-    console.log(knownHash);
-}*/

@@ -44,6 +44,7 @@ $(document).ready(function () {
 
     //Loading additional views
     $("#header").load("./views/header.html");
+    $("#footer").load("./views/footer.html");
     //Detect metamask
     detectProvider();
 });
