@@ -1,0 +1,13 @@
+{
+  "short_name": "EtherTrack",
+  "name": "EtherTrack : OpenSource Traceability System",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1E376C",
+  "theme_color": "#1E376C",
+  "icons": [{
+    "src": "img/icoET.png",
+    "type": "image/png",
+    "sizes": "144x144"
+  }]
+}
