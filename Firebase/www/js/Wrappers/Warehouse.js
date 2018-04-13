@@ -14,7 +14,7 @@ class Warehouse {
 
             wh.abi = data;
 
-            if (wh.address.length == 0) // No address specified, create new one
+            if (wh.address == null || wh.address.length == 0) // No address specified, create new one
             {
 				console.log("Creating WH ...");
                 wh.createWarehouse(wh.nsAddress, wh.name);
@@ -148,6 +148,8 @@ class Warehouse {
 				contractObject.address = contractInstance.address; 
 				console.log("EtherTrackWarehouse " + contractName + " detected at : " + contractInstance.address); ;
 				contractObject.startEventsListner();
+				//Publicate name ?
+				askRegisterWH(contractInstance.address, contractName, ethNSAddress);
 				})
         })
     }

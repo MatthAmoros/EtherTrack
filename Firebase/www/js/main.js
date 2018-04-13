@@ -1,4 +1,5 @@
 var provider;
+
 // Document ready, bind clicks events, load main view and detect web3 provider
 $(document).ready(function () {
     $("#btnAddWH").click(function () {
@@ -13,6 +14,7 @@ $(document).ready(function () {
             toast("Already exsits.");
         }
     });
+    
     $("#btnCreatWH").click(function () {
         let NScontractAddress = $("#nsAddress").val();
         let whName = $("#whName").val();
@@ -42,12 +44,10 @@ $(document).ready(function () {
         toast("Name service creation request sent, please wait for network response...");
     });
 
-    //Loading additional views
-    $("#header").load("./views/header.html");
-    $("#footer").load("./views/footer.html");
     //Detect metamask
     detectProvider();
 });
+
 // Detect web3 provider (Metamask / Mist / Local Node)
 function detectProvider() {
     if (typeof web3 !== 'undefined') {
@@ -79,9 +79,13 @@ function detectProvider() {
         catch (err) {
             toast("Not connected")
             //Metamask needed 
-            $('#main').replaceWith('<div><a href="https://metamask.io/"><img src="./img/metamask-required.png" /></a></div>');
+            displayMetaMaskBanner();            
         }
     }
+}
+
+function displayMetaMaskBanner() {
+	$('#main').replaceWith('<div><a href="https://metamask.io/"><img style="align:center" src="./img/metamask-required.png" /></a></div>');
 }
 
 // Log events to grid
@@ -91,6 +95,7 @@ function logEvents(contract, eventType, description) {
         "<th>" + description + "</th>" +
         "</tr> ");
 }
+
 // Display warehouse to main view
 function displayWarehouse(name, address, savePref) {
     $('#WHList').append("<li class=\"list-group-item\">" + name + " at : " + address + 
@@ -116,6 +121,7 @@ function displayWarehouse(name, address, savePref) {
         contract.sendUnit(whAddressTo, unitCode, provider);
     });
 }
+
 // Display name service to main view
 function displayNameService(name, address, savePref) {
     $('#NSList').append("<li class=\"list-group-item\">" + name + " at : " + address +
@@ -158,19 +164,23 @@ function displayNameService(name, address, savePref) {
         contract.setDatastoreAddress(dsAddress);
     });
 }
+
 // Save preference to Firebase
 function savePreference(address) {
     let contract = bindedContract.find(x => x.address == address);
     contract.saveToFirebase();
 }
+
 // Display datastore address
 function displayDataStoreAddres(NSaddress, DSaddress) {
     $("#whDestAddr-" + NSaddress.substring(0, 10)).val(DSaddress);
 }
+
 // Display node address
 function displayNodeName(name, address) {
     $('#nodeList').append("<li class=\"list-group-item\">" + name + " at : " + address + "</li>");
 }
+
 // Display received units
 function displayUnits () {
 	bindedContract.forEach(function(wh) {
@@ -178,4 +188,17 @@ function displayUnits () {
 			wh.displayIncommingUnits();
 		}		
 	});
+}
+
+function updateDisplayAppReady() {
+	 //Loading additional views
+	$("#header").empty();
+    $("#footer").empty();
+    $("#modalRegister").empty();
+    $("#main").empty();
+    
+    $("#header").load("./views/header.html");
+    $("#footer").load("./views/footer.html");
+    $("#main").load("./views/main.html");
+    $("#modalRegister").load("./views/modal-register-name.html");
 }

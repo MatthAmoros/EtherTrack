@@ -158,6 +158,24 @@ class NameService {
             console.log(result);
         });
     }
+    
+   registerGLNWithAddress(gln, address) {
+        var glnNodeAddress;
+
+        var contract = this;
+        //Declare contract according to parsed ABI
+        let myNSContract = TruffleContract(this.abi);
+        //Setting contract provider (Metmask / local node)
+        myNSContract.setProvider(this.provider.currentProvider);
+
+        myNSContract.at(this.address).then(function (instance) {
+            console.log("Querying " + contract.address + " for " + gln + " ...");
+            return instance.registerName(address, gln);
+        }).then(function (result) {
+            console.log(contract.address + " : ");
+            console.log(result);
+        });
+    }
 
     //Build contract promise
     buildPromise(contract, at_address) {
