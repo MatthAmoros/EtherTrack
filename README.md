@@ -66,8 +66,4 @@ Launch you browser on http://localhost:8081/ and you are done !
 * [MetaMask](https://github.com/MetaMask) : Ethereum chrome extension
 * [Node.js](https://nodejs.org/en/) : Asynchronous event driven JavaScript runtime
 * [Express](http://expressjs.com/) : Web framework for Node.js
-
-
-
-
-
+* [Firebase](https://firebase.google.com/) : Google's mobile platform, used to cache user preferences
