@@ -14,7 +14,7 @@ admin.initializeApp({
 exports.createUser = functions.https.onRequest((req, res) => {	
 	if (req.method === 'POST') {
 		if (req.body.ethAddress !== undefined) {    
-			admin.auth().createCustomToken(req.body.ethAddress)
+			admin.auth().createCustomToken(req.body.ethAddress, {ethAdd: req.body.ethAddress})
 			.then(function(customToken) {
 				// Send token back to client
 				return res.status(200).send({token : customToken, ethAddres: req.body.ethAddress});

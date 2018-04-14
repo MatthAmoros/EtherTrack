@@ -124,6 +124,7 @@ function displayWarehouse(name, address, savePref) {
 
 // Display name service to main view
 function displayNameService(name, address, savePref) {
+	var resolvedAddress = 
     $('#NSList').append("<li class=\"list-group-item\">" + name + " at : " + address +
         "<input type=\"button\" value=\"Get GLN address\" id=\"nsBtnLook-" + address.substring(0, 10) + "\"/>" +
         "<input type=\"button\" value=\"RegisterGLN\" id=\"nsBtnReg-" + address.substring(0, 10) + "\"/>" +

@@ -11,6 +11,7 @@ var selectedWarehouseName;
 // Check if account changed
 function accountUpdate(account) {
     if (currentAccount != account) {
+		signOut();
         currentAccount = account;
 
         if (typeof account == 'undefined') {
@@ -18,6 +19,7 @@ function accountUpdate(account) {
             $("#main").load("./views/locked.html")
             $("#navbarNavAltMarkup").find("#cntAsAccount").text("User : Locked");
             isAccountLocked = true;
+            
             return;
         }
         else
@@ -60,7 +62,27 @@ function startDapp(provider) {
 }
 
 function signIn() {
-	updateDisplayAppReady();
+	updateDisplayAppReady();	
+    console.log("Calling cloud based function ...");
+	$.ajax({
+	  type: 'POST',
+	  url: '/createUser',  
+	  data: {ethAddress: currentAccount},
+	  success: function(data) {
+	   console.log(data);
+	   firebase.auth().signInWithCustomToken(data.token).catch(function(error) {
+		  console.log(error);
+		});	   
+	  },
+	  error: function() {
+	   console.log("Error !");
+	  }
+	});
+}
+
+function signOut() {
+	firebase.auth().signOut();	
+	console.log("Signed out.");
 }
 
 function askRegisterWH(address, name, ns) {

@@ -174,6 +174,7 @@ class NameService {
         }).then(function (result) {
             console.log(contract.address + " : ");
             console.log(result);
+            saveKnownNodes(gln, address, result.transactionHash);
         });
     }
 
