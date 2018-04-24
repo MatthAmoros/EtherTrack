@@ -11,7 +11,6 @@ var selectedWarehouseName;
 // Check if account changed
 function accountUpdate(account) {
     if (currentAccount != account) {
-		signOut();
         currentAccount = account;
 
         if (typeof account == 'undefined') {
@@ -23,12 +22,16 @@ function accountUpdate(account) {
             return;
         }
         else
-            updateDisplayAppReady();
-
-        provider.eth.defaultAccount = account;
-        $("#navbarNavAltMarkup").find("#cntAsAccount").text("User : " + account.substring(0, 10) + "[...]");
-        isAccountLocked = false;
-        reloadPreference();
+        {
+			//Account not undefined
+			updateDisplayAppReady();
+			provider.eth.defaultAccount = account;
+			$("#navbarNavAltMarkup").find("#cntAsAccount").text("User : " + account.substring(0, 10) + "[...]");
+			isAccountLocked = false;
+			signIn().then(function() { 
+				reloadPreference(); 
+			});
+		}
     }
 }
 
@@ -44,11 +47,7 @@ function startDapp(provider) {
     
 	//First load
 	accountUpdate(provider.eth.accounts[0]);
-	
-	if(!isAccountLocked) {
-		signIn();
-	}
-		
+
     //Account refresh
     setInterval(() => {
         web3.eth.getAccounts((err, accounts) => {
@@ -61,28 +60,14 @@ function startDapp(provider) {
     provider.sendAsync = Web3.providers.HttpProvider.prototype.send;
 }
 
-function signIn() {
-	updateDisplayAppReady();	
-    console.log("Calling cloud based function ...");
-	$.ajax({
-	  type: 'POST',
-	  url: '/createUser',  
-	  data: {ethAddress: currentAccount},
-	  success: function(data) {
-	   console.log(data);
-	   firebase.auth().signInWithCustomToken(data.token).catch(function(error) {
-		  console.log(error);
-		});	   
-	  },
-	  error: function() {
-	   console.log("Error !");
-	  }
-	});
-}
-
-function signOut() {
-	firebase.auth().signOut();	
-	console.log("Signed out.");
+function startPresentation() {
+	if(typeof bindedContract == 'undefined' || bindedContract.length == 0) {
+		//First connection, display help
+		$("#helpModal").modal('toggle');
+		$('#helpModal #modHelpOk').click(function() {
+			addPublicNameServiceForNetwork(web3.version.network);
+		});
+	}	
 }
 
 function askRegisterWH(address, name, ns) {

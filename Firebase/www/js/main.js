@@ -46,6 +46,10 @@ $(document).ready(function () {
 
     //Detect metamask
     detectProvider();
+    
+    //Load modals
+    $("#modalRegister").load("./views/modal-register-name.html");
+    $("#modalHelp").load("./views/modal-help.html");
 });
 
 // Detect web3 provider (Metamask / Mist / Local Node)
@@ -195,11 +199,9 @@ function updateDisplayAppReady() {
 	 //Loading additional views
 	$("#header").empty();
     $("#footer").empty();
-    $("#modalRegister").empty();
-    $("#main").empty();
+    $("#main").empty();    
     
     $("#header").load("./views/header.html");
     $("#footer").load("./views/footer.html");
     $("#main").load("./views/main.html");
-    $("#modalRegister").load("./views/modal-register-name.html");
 }
