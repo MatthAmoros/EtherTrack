@@ -8,7 +8,36 @@ var config = {
     messagingSenderId: "789424521077"
 };
 firebase.initializeApp(config);
-var test;
+
+function signIn() {
+	return new Promise(function (resolve, reject) {
+			updateDisplayAppReady();	
+			console.log("Calling cloud based function ...");
+			$.ajax({
+			  type: 'POST',
+			  url: '/createUser',  
+			  data: {ethAddress: currentAccount},
+			  success: function(data) {
+			   console.log("Signed in.");
+			   //Use ethereum address as uid
+			   firebase.auth().signInWithCustomToken(data.token).catch(function(error) {
+				  //Call promise
+				  reject(error);
+				});
+				resolve();
+			  },
+			  error: function() {
+			   console.log("Error while sign-in!");
+			   reject("Error while sign-in!");
+			  }
+			});
+		});	
+}
+
+function signOut() {
+	firebase.auth().signOut();	
+	console.log("Signed out.");
+}
 
 // Save warehouse info to database
 function saveWarehouse(userAccount, whAddress, whName) {
@@ -22,6 +51,25 @@ function saveNameService(userAccount, nsAddress) {
         address: nsAddress
     });
 }
+
+function addPublicNameServiceForNetwork(networkId) {
+	if(typeof networkId == 'undefined') { return; }
+	    firebase.database().ref('appParameters/nameServices/network/').child(networkId.toString())
+        .once('value', function (snapshot) { 
+			var nameService = snapshot;
+			if(nameService != null) {
+				nameService.forEach(function(child) {
+					let address = child.val();
+					//Adding to user context
+					let myNameService = new NameService(address, provider, null, true);
+					bindedContract.push(myNameService);
+					//Persist changes
+					saveNameService(currentAccount, address);
+				});
+			}
+		});
+}
+
 // Retrieve user preferences (WH / NS previously saved)
 function getUserPreference(userAccount) {
     firebase.database().ref('users').child(userAccount)
@@ -69,8 +117,12 @@ function getUserPreference(userAccount) {
 							}
                         });
                     }
-                });
-
+                });                
             }
-        });
+		
+        }).then(function () { 			
+			//First connection
+			console.log("Presentation ... ");
+			startPresentation();	
+			});
 }
