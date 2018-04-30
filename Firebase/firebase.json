@@ -7,11 +7,16 @@
       "**/.*",
       "**/node_modules/**"
     ],
+
     "rewrites": [
 	  {
 		"source": "/createUser",
 		"function": "createUser"
-      }
+      },
+	{
+		"source": "/",
+		"destination": "/startbootstrap-new-age/landing.html"
+     }
     ]
   },
   "functions": {

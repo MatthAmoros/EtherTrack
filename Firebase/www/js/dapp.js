@@ -15,7 +15,7 @@ function accountUpdate(account) {
 
         if (typeof account == 'undefined') {
             toast("Please unlock account");
-            $("#main").load("./views/locked.html")
+            $("#main").load("./views/locked.html");
             $("#navbarNavAltMarkup").find("#cntAsAccount").text("User : Locked");
             isAccountLocked = true;
             
@@ -38,7 +38,7 @@ function accountUpdate(account) {
 // Start DApp 
 function startDapp(provider) {
     if (!provider.isConnected()) {
-        toast("Not connected")
+        toast("Not connected");
         
         //Metamask needed 
         displayMetaMaskBanner();
@@ -52,9 +52,9 @@ function startDapp(provider) {
     setInterval(() => {
         web3.eth.getAccounts((err, accounts) => {
             console.log("Refresh account ...");
-            if (err) return
+            if (err) return;
             accountUpdate(accounts[0]);
-        })
+        });
     }, 3000);
 
     provider.sendAsync = Web3.providers.HttpProvider.prototype.send;

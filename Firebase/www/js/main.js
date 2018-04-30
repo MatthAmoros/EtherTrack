@@ -6,7 +6,7 @@ $(document).ready(function () {
         let contractAddress = $("#whAddress").val();
 
         if (bindedContract.indexOf(contractAddress) == -1) {
-            let wh = new Warehouse(contractAddress, null, null, provider, null, false)
+            let wh = new Warehouse(contractAddress, null, null, provider, null, false);
             bindedContract.push(wh);
             toast("Looking for warehouse at " + contractAddress + "...");
         }
@@ -20,7 +20,7 @@ $(document).ready(function () {
         let whName = $("#whName").val();
 
         if (bindedContract.indexOf(whName) == -1) {
-            let wh = new Warehouse(null, NScontractAddress, whName, provider, null, false)
+            let wh = new Warehouse(null, NScontractAddress, whName, provider, null, false);
             bindedContract.push(wh);
             toast("Warehouse creation request sent, please wait for network response...");
         }
@@ -81,7 +81,7 @@ function detectProvider() {
             }
         }
         catch (err) {
-            toast("Not connected")
+            toast("Not connected");
             //Metamask needed 
             displayMetaMaskBanner();            
         }

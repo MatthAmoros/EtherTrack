@@ -87,15 +87,15 @@ function getUserPreference(userAccount) {
 								let myWarehouse = new Warehouse(warehouse.address, null, null, provider, true);
 								bindedContract.push(myWarehouse);
 								//Received units
-								for (var key in warehouse.received) {
-									if (warehouse.received.hasOwnProperty(key)) {
-										myWarehouse.bindIncommingUnit(warehouse.received[key].unitHash, warehouse.received[key].unitClear, warehouse.received[key].from, warehouse.received[key].tx, key);
+								for (var keyRecv in warehouse.received) {
+									if (warehouse.received.hasOwnProperty(keyRecv)) {
+										myWarehouse.bindIncommingUnit(warehouse.received[keyRecv].unitHash, warehouse.received[keyRecv].unitClear, warehouse.received[keyRecv].from, warehouse.received[keyRecv].tx, keyRecv);
 									}
 								}
 								//Sent units
-								for (var key in warehouse.sent) {
-									if (warehouse.sent.hasOwnProperty(key)) {
-										myWarehouse.bindIncommingUnit(warehouse.sent[key].unitHash, warehouse.sent[key].unitClear, warehouse.sent[key].from, warehouse.sent[key].tx, key);
+								for (var keySent in warehouse.sent) {
+									if (warehouse.sent.hasOwnProperty(keySent)) {
+										myWarehouse.bindIncommingUnit(warehouse.sent[keySent].unitHash, warehouse.sent[keySent].unitClear, warehouse.sent[keySent].from, warehouse.sent[keySent].tx, keySent);
 									}
 								}
 							}

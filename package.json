@@ -1,0 +1,12 @@
+{
+  "name": "travis-ethertrack",
+  "description": "Travis-CI check for JSHint",
+  "author": "SunPaz",
+  "version": "0.0.1",
+  "devDependencies": {
+    "jshint": "^2.9.5"
+  },
+  "scripts": {
+    "test": "jshint ./Firebase/www/js/dapp.js; jshint ./Firebase/www/js/main.js; jshint ./Firebase/www/js/database.js"
+  }
+}
