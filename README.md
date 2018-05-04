@@ -3,6 +3,8 @@ Traceability system based on Ethereum Blockchain
 
 Live at : https://ethertrack.firebaseapp.com/
 
+Travis CI status : ![alt text](https://api.travis-ci.org/SunPaz/EtherTrack.svg?branch=master)
+
 ## What is traceability ?
 Identify, follow and authenticate a product throught its whole life cycle.
 
