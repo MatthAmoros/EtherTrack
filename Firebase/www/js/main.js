@@ -1,7 +1,16 @@
 var provider;
 
+//Bind Moseif
+var moseifToken = {
+	applicationId: 'eyJhcHAiOiI2MTc6MzMiLCJ2ZXIiOiIyLjAiLCJvcmciOiI4NzozMyIsImlhdCI6MTUyNTM5MjAwMH0.cXDXfYQPj5Pja_nEnVWe7SmTHT52RY317T8bhe8ZFyU'
+};
+
 // Document ready, bind clicks events, load main view and detect web3 provider
-$(document).ready(function () {
+$(document).ready(function () {	
+	// Moseif
+	moesif.init(moseifToken);
+	moesif.start();
+		
     $("#btnAddWH").click(function () {
         let contractAddress = $("#whAddress").val();
 
