@@ -28,10 +28,8 @@ The nature of the blockchain system address a lot of issues that you must face w
 ## Current version
 Current version features :
 * 3 Contracts : EtherTrackNS (Naming Service) EtherTrackWarehouse (Manage traceability Unit) and EtherTrackDatastore (a data store proxy)
-* A basic GUI designed with NodeJS to connect to a local node. It can deploy contracts and do basic contracts calls.
+* A basic web site designed with Bootstrap 4 to use with Metamask. It can deploy contracts and do basic contracts calls.
 * Truffle deploy scripts and refactored contracts.
-
-Name service contract live on Rikerby Network at : 0x76c0c189c64b4709d8b1662762af55264454120f
 
 ## Installing
 
@@ -41,7 +39,7 @@ git clone https://github.com/SunPaz/EtherTrack
 ```
 Start Node.js web server :
 ```
-node Truffle-project/NodeJS/node-server.js 
+node Firebase/www/NodeJS/node-server.js
 ```
 Compile contracts using Truffle :
 ```
