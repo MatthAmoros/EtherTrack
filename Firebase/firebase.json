@@ -14,8 +14,8 @@
 		"function": "createUser"
       },
 	{
-		"source": "/",
-		"destination": "/startbootstrap-new-age/landing.html"
+		"source": "/dapp",
+		"destination": "/index.html"
      }
     ]
   },

@@ -8,5 +8,8 @@
   },
   "scripts": {
     "test": "jshint ./Firebase/www/js/dapp.js; jshint ./Firebase/www/js/main.js; jshint ./Firebase/www/js/database.js"
+  },
+  "dependencies": {
+    "firebase": "^4.13.1"
   }
 }
