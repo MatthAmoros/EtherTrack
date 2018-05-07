@@ -4,4 +4,4 @@ node_js:
 install:
  — npm install -g firebase-tools
 after_success:
- — firebase deploy — project projectId — token $FIREBASE_TOKEN.
+ — firebase deploy — project projectId — token $FIREBASE_TOKEN
