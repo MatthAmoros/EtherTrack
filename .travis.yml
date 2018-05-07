@@ -5,10 +5,7 @@ install:
  - npm install -g firebase-tools
 script:
  - npm test
- jobs:
-  include:
-    - stage: firebase deploy
-       deploy:
-        provider: firebase
-        token:
-         secure: FIREBASE_TOKEN
+deploy:
+	provider: firebase
+	token:
+		secure: FIREBASE_TOKEN
