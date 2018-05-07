@@ -16,6 +16,10 @@
 	{
 		"source": "/dapp",
 		"destination": "/index.html"
+     },
+	{
+		"source": "/startbootstrap-new-age/*",
+		"destination": "/startbootstrap-new-age/landing.html"
      }
     ]
   },
