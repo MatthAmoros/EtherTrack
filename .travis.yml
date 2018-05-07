@@ -6,7 +6,9 @@ install:
 script:
  - npm test
 deploy:
-  skip_cleanup: true
   provider: firebase
+  on:
+   branch: master
   token:
-    secure: $FIREBASE_TOKEN
+    secure: FIREBASE_TOKEN
+  message: "Deploying to Firebase"
