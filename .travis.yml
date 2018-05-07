@@ -6,4 +6,5 @@ before_script:
 script:
   - npm test
 after_success:
+  - cd Firebase
   - firebase deploy --token=$FIREBASE_TOKEN
