@@ -98,7 +98,7 @@ function detectProvider() {
 }
 
 function displayMetaMaskBanner() {
-	$('#main').replaceWith('<div><a href="https://metamask.io/"><img style="align:center" src="./img/metamask-required.png" /></a></div>');
+	$('#main').replaceWith('<div><a href="https://metamask.io/"><img style="align:center" src="./img/metamask-required.png" /></a> <br /> <br /> Or check the <a href="https://ethertrack.firebaseapp.com/startbootstrap-new-age/landing.html">landing page</a> for more information.</div>');
 }
 
 // Log events to grid
@@ -107,32 +107,6 @@ function logEvents(contract, eventType, description) {
         "<th>" + eventType + "</th>" +
         "<th>" + description + "</th>" +
         "</tr> ");
-}
-
-// Display warehouse to main view
-function displayWarehouse(name, address, savePref) {
-    $('#WHList').append("<li class=\"list-group-item\">" + name + " at : " + address + 
-        "<input type=\"button\" value=\"Send unit\" id=\"whBtnSend-" + address.substring(0, 10) + "\"/>" +
-        "<input type=\"button\" value=\"Create unit\" id=\"whBtnCreate-" + address.substring(0, 10) + "\"/>" +
-        "<input placeholder=\"Unit code\" id=\"whUniteCode-" + address.substring(0, 10) + "\"/>" +
-        "<input placeholder=\"Destination address\" id=\"whDestAddr-" + address.substring(0, 10) + "\"/>" +
-        "</li>"
-    );
-
-    $("#whBtnCreate-" + address.substring(0, 10)).click(function () {
-        let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
-        let contract = bindedContract.find(x => x.address == address);
-
-        contract.createUnit(unitCode);
-    });
-
-    $("#whBtnSend-" + address.substring(0, 10)).click(function () {
-        let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
-        let whAddressTo = $("#whDestAddr-" + address.substring(0, 10)).val();
-        let contract = bindedContract.find(x => x.address == address);
-
-        contract.sendUnit(whAddressTo, unitCode, provider);
-    });
 }
 
 // Display name service to main view

@@ -1,5 +1,11 @@
 class Warehouse {
-    constructor(warehouseAddress, nsAddress, name, provider, fromDatabase) {
+    constructor(displayDivId, warehouseAddress, nsAddress, name, provider, fromDatabase) {
+		this.displayDivId = displayDivId;
+		
+		if(this.displayDivId == undefined || this.displayDivId.length == 0) {
+			this.displayDivId = '#WHList';
+		}
+		
         this.address = warehouseAddress;
         this.provider = provider;
         this.nsAddress = nsAddress;
@@ -77,7 +83,7 @@ class Warehouse {
 					}
                 });                
             }).then(function () { 
-					displayWarehouse(contractName, contractInstance.address); 
+					display(contractObject.displayDivId ,contractName, contractInstance.address); 
 					contractObject.saveToFirebase();
 				});
     }
@@ -226,4 +232,30 @@ class Warehouse {
                 tx: tx
             });
 	}
+	
+	// Display warehouse to target div
+	display(target, name, address, savePref) {
+    $(target).append("<li class=\"list-group-item\">" + name + " at : " + address + 
+        "<input type=\"button\" value=\"Send unit\" id=\"whBtnSend-" + address.substring(0, 10) + "\"/>" +
+        "<input type=\"button\" value=\"Create unit\" id=\"whBtnCreate-" + address.substring(0, 10) + "\"/>" +
+        "<input placeholder=\"Unit code\" id=\"whUniteCode-" + address.substring(0, 10) + "\"/>" +
+        "<input placeholder=\"Destination address\" id=\"whDestAddr-" + address.substring(0, 10) + "\"/>" +
+        "</li>"
+    );
+
+    $("#whBtnCreate-" + address.substring(0, 10)).click(function () {
+        let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
+        let contract = bindedContract.find(x => x.address == address);
+
+        contract.createUnit(unitCode);
+    });
+
+    $("#whBtnSend-" + address.substring(0, 10)).click(function () {
+        let unitCode = $("#whUniteCode-" + address.substring(0, 10)).val();
+        let whAddressTo = $("#whDestAddr-" + address.substring(0, 10)).val();
+        let contract = bindedContract.find(x => x.address == address);
+
+        contract.sendUnit(whAddressTo, unitCode, provider);
+    });
+}
 }
