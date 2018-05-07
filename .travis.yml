@@ -7,4 +7,4 @@ script:
   - npm test
 after_success:
   - cd Firebase
-  - firebase deploy — project ethertrack — token $FIREBASE_TOKEN
+  - firebase deploy -project ethertrack -token $FIREBASE_TOKEN
