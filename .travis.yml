@@ -10,7 +10,5 @@ script:
     - stage: firebase deploy
        deploy:
         provider: firebase
-        on:
-         branch: master
         token:
          secure: FIREBASE_TOKEN
