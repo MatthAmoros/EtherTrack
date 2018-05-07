@@ -7,8 +7,7 @@
     "jshint": "^2.9.5"
   },
   "scripts": {
-    "test": "jshint ./Firebase/www/js/dapp.js; jshint ./Firebase/www/js/main.js; jshint ./Firebase/www/js/database.js",
-    "deploy" : "firebase deploy — project ethertrack — token $FIREBASE_TOKEN"
+    "test": "jshint ./Firebase/www/js/dapp.js; jshint ./Firebase/www/js/main.js; jshint ./Firebase/www/js/database.js"
   },
   "dependencies": {
     "firebase": "^4.13.1"
