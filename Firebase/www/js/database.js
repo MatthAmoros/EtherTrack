@@ -84,7 +84,7 @@ function getUserPreference(userAccount) {
                             warehouse = wh.val();
 
                             if(warehouse.address != undefined) { //It has addres, its a warehouse                           
-								let myWarehouse = new Warehouse(warehouse.address, null, null, provider, true);
+								let myWarehouse = new Warehouse('', warehouse.address, null, null, provider, true);
 								bindedContract.push(myWarehouse);
 								//Received units
 								for (var keyRecv in warehouse.received) {
