@@ -15,7 +15,7 @@ function signIn() {
 			console.log("Calling cloud based function ...");
 			$.ajax({
 			  type: 'POST',
-			  url: '/createUser',  
+			  url: 'https://ethertrack.firebaseapp.com/createUser',  
 			  data: {ethAddress: currentAccount},
 			  success: function(data) {
 			   console.log("Signed in.");

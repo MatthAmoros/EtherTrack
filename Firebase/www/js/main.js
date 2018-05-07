@@ -8,8 +8,8 @@ var moseifToken = {
 // Document ready, bind clicks events, load main view and detect web3 provider
 $(document).ready(function () {	
 	// Moseif
-	moesif.init(moseifToken);
-	moesif.start();
+	//moesif.init(moseifToken);
+	//moesif.start();
 		
     $("#btnAddWH").click(function () {
         let contractAddress = $("#whAddress").val();
