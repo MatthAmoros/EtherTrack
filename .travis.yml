@@ -5,6 +5,4 @@ before_script:
   - npm install -g firebase-tools
 script:
   - npm test
-after_success:
-  - cd Firebase
-  - firebase deploy  --project ethertrack  --token $FIREBASE_TOKEN
+after_success: cd Firebase && firebase deploy --project ethertrack --token $FIREBASE_TOKEN
