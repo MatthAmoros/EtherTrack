@@ -1,11 +1,9 @@
 language: node_js
 node_js:
- - "node"
-install:
- - npm install -g firebase-tools
+  - "node"
+before_script:
+  - npm install -g firebase-tools
 script:
- - npm test
-deploy:
-	provider: firebase
-	token:
-		secure: FIREBASE_TOKEN
+  - npm test
+after_success:
+  - firebase deploy --token=$FIREBASE_TOKEN
