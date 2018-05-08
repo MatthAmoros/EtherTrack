@@ -3,7 +3,7 @@ Traceability system based on Ethereum Blockchain
 
 Live at : https://ethertrack.firebaseapp.com/
 
-Travis CI status : ![alt text](https://api.travis-ci.org/SunPaz/EtherTrack.svg?branch=master)
+Travis CI + JSHint status : ![alt text](https://api.travis-ci.org/SunPaz/EtherTrack.svg?branch=master)
 
 ## What is traceability ?
 Identify, follow and authenticate a product throught its whole life cycle.
@@ -67,3 +67,4 @@ Launch you browser on http://localhost:8081/ and you are done !
 * [Node.js](https://nodejs.org/en/) : Asynchronous event driven JavaScript runtime
 * [Express](http://expressjs.com/) : Web framework for Node.js
 * [Firebase](https://firebase.google.com/) : Google's mobile platform, used to cache user preferences
+* [JSHint](http://jshint.com/) : Used as a JS linter
