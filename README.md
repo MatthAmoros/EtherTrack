@@ -5,6 +5,9 @@ Live at : https://ethertrack.firebaseapp.com/
 
 Travis CI + JSHint status : ![alt text](https://api.travis-ci.org/SunPaz/EtherTrack.svg?branch=master)
 
+## Main goal
+This project's goal is mainly to present a concrete example of an off-chain (Firebase) and in-chain (contracts) dynamic content management.
+
 ## What is traceability ?
 Identify, follow and authenticate a product throught its whole life cycle.
 
