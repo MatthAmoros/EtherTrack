@@ -33,11 +33,11 @@ var myNS;
 		{
 			//Register name
 			return myNS.registerName("", 118292);
-		})	
+		})
 		.then(function()
 		{
 			//Create warehouse
-			return deployer.deploy(EtherTrackWarehouse, "Andinexia", myNS.address, {gas: 5000000});
-		})	
+			return deployer.deploy(EtherTrackWarehouse, "Store", myNS.address, {gas: 5000000});
+		})
 
 };
