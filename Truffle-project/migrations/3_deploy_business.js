@@ -34,9 +34,9 @@ var myNS;
 			//Register name
 			return myNS.registerName("", 0000001).then(function()
 			{
+				console.log(">> Creating Warehouses");
 				deployer.deploy(EtherTrackWarehouse, "Store", myNS.address);
 				deployer.deploy(EtherTrackWarehouse, "Facility", myNS.address);
 			});
 		})
-
 };
