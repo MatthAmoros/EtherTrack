@@ -37,6 +37,8 @@ var myNS;
 				console.log(">> Creating Warehouses");
 				deployer.deploy(EtherTrackWarehouse, "Store", myNS.address);
 				deployer.deploy(EtherTrackWarehouse, "Facility", myNS.address);
+
+				return 0;
 			});
 		})
 };
