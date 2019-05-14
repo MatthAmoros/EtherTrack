@@ -6,7 +6,7 @@ var EtherTrackWarehouse = artifacts.require("EtherTrackWarehouse");
 module.exports = function(deployer) {
 var storeInstance;
 var myNS;
-	return deployer.deploy(EtherTrackNS, "", "", {gas: 5000000})
+	return deployer.deploy(EtherTrackNS, "", "")
 		.then(function(instance)
 		{
 			//Get deployed instance
@@ -32,12 +32,11 @@ var myNS;
 		.then(function()
 		{
 			//Register name
-			return myNS.registerName("", 12358965724125); //Register this node with 12358965724125
-		})
-		.then(function()
-		{
-			//Create warehouse
-			return deployer.deploy(EtherTrackWarehouse, "MainFacility", myNS.address, {gas: 5000000}); //Create Test warehouse
+			return myNS.registerName("", 0000001).then(function()
+			{
+				deployer.deploy(EtherTrackWarehouse, "Store", myNS.address);
+				deployer.deploy(EtherTrackWarehouse, "Facility", myNS.address);
+			});
 		})
 
 };
