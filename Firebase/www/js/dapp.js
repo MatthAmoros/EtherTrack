@@ -18,44 +18,52 @@ function accountUpdate(account) {
             $("#main").load("./views/locked.html");
             $("#navbarNavAltMarkup").find("#cntAsAccount").text("User : Locked");
             isAccountLocked = true;
-            
+
             return;
         }
         else
         {
 			//Account not undefined
 			updateDisplayAppReady();
+
 			provider.eth.defaultAccount = account;
 			$("#navbarNavAltMarkup").find("#cntAsAccount").text("User : " + account.substring(0, 10) + "[...]");
+
 			isAccountLocked = false;
-			signIn().then(function() { 
-				reloadPreference(); 
+
+			signIn().then(function() {
+				reloadPreference();
 			});
 		}
-    }
+	}
 }
 
-// Start DApp 
+// Start DApp
 function startDapp(provider) {
     if (!provider.isConnected()) {
         toast("Not connected");
-        
-        //Metamask needed 
+
+        //Metamask needed
         displayMetaMaskBanner();
         return;
     }
-    
-	//First load
-	accountUpdate(provider.eth.accounts[0]);
+		else {
+			//Needed since new versions
+			ethereum.enable();
+		}
 
     //Account refresh
     setInterval(() => {
-        web3.eth.getAccounts((err, accounts) => {
-            console.log("Refresh account ...");
-            if (err) return;
-            accountUpdate(accounts[0]);
-        });
-    }, 3000);
+					console.log("Refresh account ...");
+					const accounts = provider.eth.accounts;
+					if(accounts != undefined) {
+						accountUpdate(accounts[0]);
+					}
+					else {
+						accountUpdate(undefined);
+					}
+				}
+    , 3000);
 
     provider.sendAsync = Web3.providers.HttpProvider.prototype.send;
 }
@@ -67,24 +75,24 @@ function startPresentation() {
 		$('#helpModal #modHelpOk').click(function() {
 			addPublicNameServiceForNetwork(web3.version.network);
 		});
-	}	
+	}
 }
 
 function askRegisterWH(address, name, ns) {
 	$('#registerNameModal #modWhAddress').val(address);
 	$('#registerNameModal #modWhName').val(name);
-	
+
 	$('#registerNameModal #modRegisterOk').click(function() {
 		let contract = bindedContract.find(x => x.address == ns);
 		console.log(contract);
         contract.registerGLNWithAddress(name, address);
 	});
-	
+
 	$('#registerNameModal').modal('toggle');
 }
 
 // Reload user preferences
-function reloadPreference() {	
+function reloadPreference() {
     toast("Reloading preferences for " + currentAccount + "...");
     getUserPreference(currentAccount);
 }
