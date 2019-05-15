@@ -6,5 +6,3 @@
 /node_modules/*
 /Firebase/www/node_modules/*
 /Firebase/functions/node_modules/*
-# ignore landing page
-/Firebase/www/startbootstrap-new-age/*
