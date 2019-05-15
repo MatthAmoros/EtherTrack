@@ -62,8 +62,8 @@ function startDapp(provider) {
 					else {
 						accountUpdate(undefined);
 					}
-				}
-    , 3000);
+				},
+				 3000);
 
     provider.sendAsync = Web3.providers.HttpProvider.prototype.send;
 }
