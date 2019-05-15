@@ -1,4 +1,10 @@
 # ignore all logs
 *.log
+# ignore builded contract to enforce rebuild
+/Truffle-project/build/contracts/*
 # ignore node_modules
 /node_modules/*
+/Firebase/www/node_modules/*
+/Firebase/functions/node_modules/*
+# ignore landing page
+/Firebase/www/startbootstrap-new-age/*
