@@ -6,11 +6,11 @@ var moseifToken = {
 };
 
 // Document ready, bind clicks events, load main view and detect web3 provider
-$(document).ready(function () {	
+$(document).ready(function () {
 	// Moseif
 	//moesif.init(moseifToken);
 	//moesif.start();
-		
+
     $("#btnAddWH").click(function () {
         let contractAddress = $("#whAddress").val();
 
@@ -23,7 +23,7 @@ $(document).ready(function () {
             toast("Already exsits.");
         }
     });
-    
+
     $("#btnCreatWH").click(function () {
         let NScontractAddress = $("#nsAddress").val();
         let whName = $("#whName").val();
@@ -55,7 +55,7 @@ $(document).ready(function () {
 
     //Detect metamask
     detectProvider();
-    
+
     //Load modals
     $("#modalRegister").load("./views/modal-register-name.html");
     $("#modalHelp").load("./views/modal-help.html");
@@ -63,38 +63,43 @@ $(document).ready(function () {
 
 // Detect web3 provider (Metamask / Mist / Local Node)
 function detectProvider() {
-    if (typeof web3 !== 'undefined') {
-        console.log("MetaMask/Mist detected !");
-        // Use Mist/MetaMask's provider
-        provider = new Web3(web3.currentProvider);
-        startDapp(provider);
-    }
-    else if (typeof window.web3 !== 'undefined') {
-        console.log("MetaMask/Mist detected !");
-        // Use Mist/MetaMask's provider
-        provider = new Web3(window.web3.currentProvider);
-        startDapp(provider);
-    }
-    else {
-        console.log("MetaMask/Mist not detected, trying to contact local node...");
-        try {
-            //Will fail if Web3 is not injected
-            let Web3 = require("web3");
+	if(!isOffChain) {
+		if (typeof web3 !== 'undefined') {
+			console.log("MetaMask/Mist detected !");
+			// Use Mist/MetaMask's provider
+			provider = new Web3(web3.currentProvider);
+			startDapp(provider);
+		}
+		else if (typeof window.web3 !== 'undefined') {
+			console.log("MetaMask/Mist detected !");
+			// Use Mist/MetaMask's provider
+			provider = new Web3(window.web3.currentProvider);
+			startDapp(provider);
+		}
+		else {
+			console.log("MetaMask/Mist not detected, trying to contact local node...");
+			try {
+				//Will fail if Web3 is not injected
+				let Web3 = require("web3");
 
-            //Local node
-            provider = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
+				//Local node
+				provider = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
 
-            if (typeof provider !== "undefined") {
-                console.log("Connecting to : " + provider.currentProvider.host);
-                startDapp(provider);
-            }
-        }
-        catch (err) {
-            toast("Not connected");
-            //Metamask needed 
-            displayMetaMaskBanner();            
-        }
-    }
+				if (typeof provider !== "undefined") {
+					console.log("Connecting to : " + provider.currentProvider.host);
+					startDapp(provider);
+				}
+			}
+			catch (err) {
+				toast("Not connected");
+				//Metamask needed
+				displayMetaMaskBanner();
+			}
+		}
+	}
+	else {
+		startDapp(null);
+	}
 }
 
 function displayMetaMaskBanner() {
@@ -111,7 +116,7 @@ function logEvents(contract, eventType, description) {
 
 // Display name service to main view
 function displayNameService(name, address, savePref) {
-	var resolvedAddress = 
+	var resolvedAddress =
     $('#NSList').append("<li class=\"list-group-item\">" + name + " at : " + address +
         "<input type=\"button\" value=\"Get GLN address\" id=\"nsBtnLook-" + address.substring(0, 10) + "\"/>" +
         "<input type=\"button\" value=\"RegisterGLN\" id=\"nsBtnReg-" + address.substring(0, 10) + "\"/>" +
@@ -174,7 +179,7 @@ function displayUnits () {
 	bindedContract.forEach(function(wh) {
 		if(wh instanceof Warehouse) {
 			wh.displayIncommingUnits();
-		}		
+		}
 	});
 }
 
@@ -182,8 +187,8 @@ function updateDisplayAppReady() {
 	 //Loading additional views
 	$("#header").empty();
     $("#footer").empty();
-    $("#main").empty();    
-    
+    $("#main").empty();
+
     $("#header").load("./views/header.html");
     $("#footer").load("./views/footer.html");
     $("#main").load("./views/main.html");

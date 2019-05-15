@@ -12,11 +12,11 @@ firebase.initializeApp(config);
 
 function signIn() {
 	return new Promise(function (resolve, reject) {
-			updateDisplayAppReady();	
+			updateDisplayAppReady();
 			console.log("Calling cloud based function ...");
 			$.ajax({
 			  type: 'POST',
-			  url: 'https://ethertrack.firebaseapp.com/createUser',  
+			  url: 'https://ethertrack.firebaseapp.com/createUser',
 			  data: {ethAddress: currentAccount},
 			  success: function(data) {
 			   console.log("Signed in.");
@@ -32,11 +32,24 @@ function signIn() {
 			   reject("Error while sign-in!");
 			  }
 			});
-		});	
+		});
 }
 
+function signInOffChain(email, password) {
+	return new Promise(function (resolve, reject) {
+			updateDisplayAppReady();
+			console.log("Calling off chain auth ...");
+			firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					console.log(errorCode + ' - ' + errorMessage);
+			});
+		});
+}
+
+
 function signOut() {
-	firebase.auth().signOut();	
+	firebase.auth().signOut();
 	console.log("Signed out.");
 }
 
@@ -56,7 +69,7 @@ function saveNameService(userAccount, nsAddress) {
 function addPublicNameServiceForNetwork(networkId) {
 	if(typeof networkId == 'undefined') { return; }
 	    firebase.database().ref('appParameters/nameServices/network/').child(networkId.toString())
-        .once('value', function (snapshot) { 
+        .once('value', function (snapshot) {
 			var nameService = snapshot;
 			if(nameService != null) {
 				nameService.forEach(function(child) {
@@ -84,7 +97,7 @@ function getUserPreference(userAccount) {
                         element.forEach(function (wh) {
                             warehouse = wh.val();
 
-                            if(warehouse.address != undefined) { //It has addres, its a warehouse                           
+                            if(warehouse.address != undefined) { //It has addres, its a warehouse
 								let myWarehouse = new Warehouse('', warehouse.address, null, null, provider, true);
 								bindedContract.push(myWarehouse);
 								//Received units
@@ -106,7 +119,7 @@ function getUserPreference(userAccount) {
                         element.forEach(function (ns) {
                             ns = ns.val();
 
-                            if(ns.address != undefined) {                            
+                            if(ns.address != undefined) {
 								let myNameService = new NameService(ns.address, provider, null, true);
 								bindedContract.push(myNameService);
 								//Known nodes
@@ -118,12 +131,12 @@ function getUserPreference(userAccount) {
 							}
                         });
                     }
-                });                
+                });
             }
-		
-        }).then(function () { 			
+
+        }).then(function () {
 			//First connection
 			console.log("Presentation ... ");
-			startPresentation();	
+			startPresentation();
 			});
 }
