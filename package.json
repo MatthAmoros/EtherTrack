@@ -2,18 +2,19 @@
   "name": "travis-ethertrack",
   "description": "Travis-CI check for JSHint",
   "author": "SunPaz",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "devDependencies": {
-    "jasmine-core": "^3.1.0",
-    "jshint": "^2.9.5",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-jasmine": "^1.1.2"
+    "jasmine-core": "^3.4.0",
+    "jshint": "^2.10.2",
+    "karma-chrome-launcher": "*",
+    "karma-jasmine": "^2.0.1"
   },
   "scripts": {
     "test": "jshint ./Firebase/www/js/*.js"
   },
   "dependencies": {
-    "firebase": "^4.13.1",
-    "karma": "^2.0.2"
+    "firebase": "*",
+    "install": "*",
+    "karma": "^4.1.0"
   }
 }
