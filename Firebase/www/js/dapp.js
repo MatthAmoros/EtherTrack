@@ -19,7 +19,7 @@ function accountUpdate(account) {
 			toast("Running off-chain.");
 
 			$("#navbarNavAltMarkup").find("#cntAsAccount").text("User : " + account + "[Off Chain]");
-
+			$("#navbar").append("<a class='nav-item nav-link' href='#' onclick='localStorage[\'isOffChain\'] = false; currentAccount = currentAccount + \'1\'; location.reload();'>Go On-chain</a>")
 			isAccountLocked = false;
 
 			signIn().then(function() {
@@ -86,7 +86,7 @@ function startDapp(provider) {
 		3000);
 	}
 
-	accountUpdate(undefined);
+	accountUpdate("");
 }
 
 function startPresentation() {
