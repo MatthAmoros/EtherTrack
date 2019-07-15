@@ -6,15 +6,15 @@
   "devDependencies": {
     "jasmine-core": "^3.4.0",
     "jshint": "^2.10.2",
-    "karma-chrome-launcher": "*",
+    "karma-chrome-launcher": "^3.0.0",
     "karma-jasmine": "^2.0.1"
   },
   "scripts": {
     "test": "jshint ./Firebase/www/js/*.js"
   },
   "dependencies": {
-    "firebase": "*",
-    "install": "*",
-    "karma": "^4.1.0"
+    "firebase": "^6.3.0",
+    "install": "^0.13.0",
+    "karma": "^4.2.0"
   }
 }
