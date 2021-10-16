@@ -1,4 +1,6 @@
 # EtherTrack
+## ! This project is no longer supported !
+## If you are interested by the idea behind it, feel free to contact me.
 Traceability system based on Ethereum Blockchain
 
 Live at : https://ethertrack.firebaseapp.com/
